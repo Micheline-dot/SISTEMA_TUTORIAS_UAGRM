@@ -1,0 +1,476 @@
+# DISEÑO TÉCNICO CORREGIDO
+## Sistema Web de Apoyo Académico Mediante Búsqueda y Filtrado de Tutorías para la UAGRM
+
+**Versión:** 2.0 – Base técnica para implementación  
+**Estado:** Diseño consolidado para guiar a Codex  
+**Base:** archivo `Diseño.txt`, requisitos RF01–RF23 y decisiones técnicas aprobadas por el equipo.
+
+---
+
+## 1. Propósito y alcance
+
+Este documento establece la referencia técnica que debe seguirse para implementar el Sistema Web de Apoyo Académico Mediante Búsqueda y Filtrado de Tutorías para la Universidad Autónoma Gabriel René Moreno (UAGRM).
+
+El sistema centraliza la oferta de tutorías y cursos de apoyo académico. Permite gestionar usuarios, habilitación de tutores, perfiles académicos, cursos, materias, temarios, horarios, búsqueda, filtros, inscripciones, registro y confirmación de participación, calificaciones, reseñas, formularios, notificaciones y reportes.
+
+El sistema no reemplaza los sistemas académicos oficiales de la UAGRM. No procesa pagos ni integra pasarelas de pago. La condición gratuita o de pago de un curso se almacena únicamente como dato informativo.
+
+Los requisitos funcionales RF01–RF23 se mantienen como referencia. No deben renombrarse, eliminarse, dividirse ni modificarse sin autorización expresa del equipo.
+
+## 2. Tecnologías aprobadas
+
+La implementación debe utilizar exclusivamente el stack aprobado:
+
+- PHP 8.4.27 NTS, VS17 x64.
+- Laravel.
+- PostgreSQL 17.
+- Composer.
+- Blade y Livewire para la interfaz.
+- HTML, CSS y JavaScript.
+- Node.js y npm para los recursos frontend.
+- Git y GitHub para control de versiones.
+- Postman para pruebas de endpoints cuando corresponda.
+- Nginx y PHP-FPM como referencia para el despliegue.
+
+El entorno de desarrollo actual es Windows. La base de datos PostgreSQL `sistema_tutorias_uagrm` ya está creada y el servicio PostgreSQL 17 está instalado y funcionando.
+
+No se debe instalar, desinstalar ni modificar XAMPP, Apache, PostgreSQL, PHP u otras herramientas ya configuradas sin solicitar autorización. Nginx no es requisito para comenzar el desarrollo local; se podrá utilizar el servidor de desarrollo de Laravel. No instalar Nginx durante la configuración inicial local.
+
+## 3. Arquitectura obligatoria: tres capas
+
+La solución será una aplicación Laravel única (monolítica), organizada estrictamente en tres capas lógicas:
+
+1. Presentación.
+2. Lógica de negocio.
+3. Acceso a datos.
+
+No se utilizará arquitectura de microservicios. No se presentará MVC como arquitectura del sistema. Laravel podrá utilizar internamente sus mecanismos de enrutamiento, controladores, Blade y Livewire, pero la separación arquitectónica y la dependencia entre componentes deben respetar las tres capas definidas aquí.
+
+### 3.1. Capa de presentación
+
+Responsabilidades:
+- Mostrar páginas, formularios, tablas, filtros y resultados.
+- Recibir las acciones del usuario.
+- Realizar validaciones de formato y obligatoriedad propias de la interfaz.
+- Invocar los casos de uso de la capa de lógica de negocio.
+- Presentar los resultados y mensajes devueltos por dicha capa.
+
+Tecnologías: Blade, Livewire, HTML, CSS y JavaScript.
+
+Restricciones:
+- Los componentes Livewire deben ser delgados.
+- Livewire no debe consultar Eloquent ni PostgreSQL directamente.
+- Livewire no debe contener reglas de negocio.
+- La presentación no decide por sí sola permisos, cupos, estados válidos ni elegibilidad para reseñar.
+
+### 3.2. Capa de lógica de negocio
+
+Responsabilidades:
+- Implementar los casos de uso.
+- Aplicar reglas de negocio y autorizaciones.
+- Coordinar operaciones de usuarios, roles, solicitudes, cursos, inscripciones, participación, reseñas, notificaciones y reportes.
+- Validar las transiciones de estado.
+- Coordinar transacciones cuando una operación afecte varias entidades.
+
+Puede organizarse en servicios de aplicación, casos de uso y políticas. Las reglas deben residir en esta capa para no duplicarse en las pantallas.
+
+### 3.3. Capa de acceso a datos
+
+Responsabilidades:
+- Consultar y persistir datos.
+- Gestionar las operaciones con PostgreSQL mediante Eloquent y consultas.
+- Aplicar migraciones, claves foráneas, índices y restricciones.
+- Proporcionar a la lógica de negocio los datos necesarios.
+
+La capa de presentación no accede directamente a esta capa. La lógica de negocio coordina el acceso a datos.
+
+### 3.4. Flujo general
+
+Navegador → Presentación (Blade/Livewire) → Lógica de negocio (casos de uso/servicios/políticas) → Acceso a datos (Eloquent/PostgreSQL).
+
+La respuesta retorna desde la lógica de negocio a la presentación y luego al navegador.
+
+## 4. Módulos funcionales
+
+| Módulo | Responsabilidades | Requisitos |
+|---|---|---|
+| Usuarios y autenticación | Registro, inicio/cierre de sesión, perfil y estado de cuenta. | RF01–RF02 |
+| Habilitación de tutores | Solicitud, documentos, revisión, aprobación y rechazo. | RF03–RF05 |
+| Perfil académico | Materias, áreas de conocimiento, experiencia y datos académicos del tutor. | RF06 |
+| Cursos y temarios | Crear, consultar, actualizar, publicar y cancelar cursos; materias, horarios y temarios. | RF07–RF10 |
+| Búsqueda y filtrado | Buscar, filtrar y consultar cursos y perfiles. | RF11–RF13 |
+| Inscripciones | Inscripción, cancelación, control de cupos y consulta de inscritos. | RF14–RF15 |
+| Participación y reseñas | Registro de asistencia del tutor, confirmación del estudiante y habilitación de reseñas. | RF15–RF16 |
+| Retroalimentación | Formularios y respuestas. | RF17–RF18 |
+| Notificaciones | Avisos de solicitudes, inscripciones y cambios relevantes. | RF19 |
+| Administración | Cuentas, roles y categorías. | RF20–RF21 |
+| Reportes | Reportes administrativos y reportes propios del tutor. | RF22–RF23 |
+
+## 5. Usuarios, roles y permisos
+
+### 5.1. Roles
+
+Se contemplan tres roles del sistema:
+- ESTUDIANTE.
+- TUTOR.
+- ADMINISTRADOR.
+
+Un mismo usuario puede tener simultáneamente los roles ESTUDIANTE y TUTOR. El rol ADMINISTRADOR es independiente.
+
+Una persona que sea estudiante y tutor utiliza una sola cuenta. No se deben crear cuentas duplicadas para representar ambos roles.
+
+La habilitación como tutor se realiza mediante solicitud y aprobación administrativa. La aprobación concede el rol TUTOR sin eliminar el rol ESTUDIANTE que el usuario ya posea.
+
+Los tipos de solicitante que contempla el proyecto incluyen estudiante, auxiliar y docente. Estos datos describen el origen académico del solicitante y no deben confundirse con los roles funcionales del sistema.
+
+### 5.2. Reglas de autorización
+
+- El estudiante gestiona sus datos, busca cursos, se inscribe, confirma su participación y califica actividades elegibles.
+- El tutor gestiona su perfil académico y sus propios cursos; consulta inscritos y registra asistencia.
+- El administrador revisa solicitudes, gestiona cuentas y categorías, y consulta reportes generales.
+- Las operaciones sobre cursos deben comprobar la propiedad: un tutor solo administra sus propios cursos.
+- Los permisos deben verificarse en la lógica de negocio, no únicamente ocultando botones en la interfaz.
+
+### 5.3. Acceso público a cursos
+
+- Cualquier visitante puede buscar cursos PUBLICADOS y consultar sus detalles.
+- La vista pública solo muestra información del curso y del perfil académico del tutor destinada a la oferta académica. No expone datos personales de contacto ni documentos de habilitación.
+- Inscribirse requiere una cuenta autenticada y activa, con el rol ESTUDIANTE, y cumplir las reglas de cupos.
+- Consultar reseñas requiere autenticación y se rige por las reglas de visibilidad de la sección 5.4. La búsqueda pública no muestra reseñas ni comentarios.
+- El filtro basado en valoraciones requiere autenticación; los visitantes no reciben ni pueden inferir reseñas o puntuaciones de usuarios.
+- Las reglas de acceso se aplican en la lógica de negocio y en las consultas, no solo en la interfaz.
+
+### 5.4. Visibilidad de reseñas
+
+- Solo usuarios autenticados pueden consultar reseñas.
+- Un tutor solo puede consultar las reseñas de sus propios cursos.
+- El administrador puede consultar todas las reseñas.
+- Un visitante sin cuenta no puede consultar reseñas.
+- Un usuario no puede calificar un curso propio.
+- Solo se permite calificar después de que la participación haya sido verificada.
+
+## 6. Modelo de datos y entidades
+
+El siguiente modelo constituye la referencia lógica para la implementación. Los nombres físicos de tablas y columnas deben mantenerse consistentes en migraciones, modelos, servicios y pruebas.
+
+### 6.1. Cuentas y perfiles
+
+- `usuarios`: cuenta, datos personales, correo único, contraseña almacenada como hash y estado de cuenta.
+- `roles`: catálogo de roles ESTUDIANTE, TUTOR y ADMINISTRADOR.
+- `usuario_rol`: relación muchos a muchos entre usuarios y roles.
+- `perfil_estudiante`: información propia del perfil de estudiante.
+- `perfil_tutor`: información académica y profesional del tutor habilitado.
+- `perfil_administrador`: información administrativa cuando corresponda.
+
+Relaciones:
+- Un usuario puede tener uno o varios roles.
+- Un usuario tiene como máximo un perfil de cada tipo.
+- Un usuario puede tener simultáneamente perfil de estudiante y perfil de tutor.
+
+### 6.2. Estructura académica
+
+- `facultades`.
+- `carreras`, relacionadas con facultades.
+- `materias`.
+- `carrera_materia`, si una materia puede pertenecer a más de una carrera.
+- `tutor_materia`, relación entre tutor y materias que puede enseñar.
+- `areas_conocimiento`.
+- `tutor_area_conocimiento`.
+- `curso_materia`, relación entre curso y materias.
+
+Un curso puede abarcar varias materias. Cada materia debe poder asociarse a su temario/contenidos correspondientes. La estructura concreta de facultades, carreras y materias debe cargarse de acuerdo con la información académica que valide el equipo; no inventar un catálogo institucional.
+
+El catálogo académico se carga únicamente desde información oficial proporcionada o validada por la UAGRM. Antes de cargarlo, el equipo revisa la fuente, los códigos y nombres disponibles, y las relaciones entre facultades, carreras y materias. La carga valida duplicados y referencias inválidas y no borra datos existentes. No se crean datos ficticios ni se automatiza la extracción de una fuente no autorizada.
+
+La relación entre carreras y materias debe reflejar el catálogo oficial: usar `carrera_materia` si una materia pertenece a varias carreras; si la fuente confirma una sola carrera por materia, basta una relación directa.
+
+### 6.3. Solicitudes de habilitación
+
+- `solicitudes_habilitacion`: usuario solicitante, tipo académico de origen, estado, fechas, administrador revisor y observación de decisión.
+- `documentos_solicitud`: documentos asociados a una solicitud, ruta protegida, nombre, tipo y fecha de carga.
+- `historial_solicitud_habilitacion` (si se requiere conservar cada cambio de estado): estado anterior/nuevo, actor, fecha y observación.
+
+Una solicitud pertenece a un usuario y puede contener varios documentos. La aprobación debe asignar el rol TUTOR sin duplicar al usuario.
+
+### 6.4. Cursos y contenidos
+
+- `categorias`: nombre, estado activo/inactivo y descripción opcional.
+- `cursos`: tutor propietario, título, descripción, modalidad, cupos totales, condición gratuita/de pago, estado y fechas.
+- `curso_materia`: materias cubiertas por el curso.
+- `horarios_curso`: horarios asociados al curso.
+- `temarios`: cada temario asociado a una materia incluida en su curso mediante `curso_materia`.
+- `contenidos_temario`: contenidos organizados dentro de cada temario.
+- `recursos_temario`: recursos asociados a un contenido del temario.
+
+Un curso puede contener varias materias. Cada materia incluida debe tener su propio temario, con sus contenidos y recursos asociados a cada contenido. Un temario no puede asociarse a una materia que no esté incluida en el curso. No asumir un único temario general.
+
+Cada curso tiene como máximo un temario por materia incluida. La unicidad se aplica a la combinación curso–materia; los contenidos se organizan dentro de ese temario.
+
+Estados de curso:
+- BORRADOR.
+- PUBLICADO.
+- CANCELADO.
+- FINALIZADO.
+
+Las transiciones deben validarse en la lógica de negocio. Un curso cancelado o finalizado no debe aceptar nuevas inscripciones.
+
+Transiciones permitidas:
+- BORRADOR → PUBLICADO.
+- PUBLICADO → CANCELADO.
+- PUBLICADO → FINALIZADO.
+
+CANCELADO y FINALIZADO son estados terminales y no se reabren. El tutor propietario cancela su curso o lo marca FINALIZADO después de la última sesión. Un curso cancelado no admite inscripciones, registros de asistencia, confirmaciones de participación ni nuevas reseñas. Un curso finalizado puede completar las confirmaciones de participación pendientes y habilitar reseñas cuando la participación quede verificada.
+
+Al cancelar un curso, dentro de una transacción se marcan como CANCELADO sus inscripciones todavía activas. Se conservan los registros, se registra `cancelada_en` y el origen `CURSO_CANCELADO`, y se generan notificaciones internas para los estudiantes afectados. Una cancelación iniciada por el estudiante conserva el origen `VOLUNTARIA`. No se confunden ambas causas ni se borran inscripciones.
+
+Las categorías utilizadas por cursos no se eliminan físicamente. Se pueden desactivar y reactivar. Una categoría inactiva no se ofrece para cursos nuevos o modificados, pero sigue asociada y visible en los cursos históricos que la utilizan. El nombre permanece único también entre categorías inactivas.
+
+### 6.5. Inscripciones
+
+- `inscripciones`: estudiante, curso, estado y fechas.
+- Estados de inscripción: INSCRITO y CANCELADO.
+- `inscripcion_confirmada_en`: fecha/hora de confirmación de la inscripción, cuando corresponda.
+- Para inscripciones canceladas: `cancelada_en` y `origen_cancelacion` (`VOLUNTARIA` o `CURSO_CANCELADO`). Estos datos distinguen cancelación individual de cancelación causada por el curso y conservan el contexto histórico.
+
+Reglas:
+- No se permiten dos inscripciones activas del mismo estudiante al mismo curso.
+- Cancelar una inscripción libera el cupo.
+- Se permite reinscribirse después de cancelar si aún hay cupos.
+- No se permite reinscribirse si ya existe participación verificada para esa inscripción/curso.
+- La inscripción debe comprobar que el curso esté PUBLICADO y tenga cupos.
+- La comprobación de cupos y la creación de inscripción deben ejecutarse dentro de una transacción con bloqueo adecuado de la fila del curso para evitar sobreinscripciones concurrentes.
+- La cancelación de un curso y la cancelación de sus inscripciones activas deben ejecutarse en una misma transacción.
+
+### 6.6. Participación: mecanismo de doble confirmación (opción C aprobada)
+
+La participación se registra mediante dos acciones independientes:
+
+1. El tutor registra la asistencia del estudiante.
+2. El estudiante confirma que participó.
+
+Entidades:
+- `participaciones`: una participación asociada a una inscripción.
+- `asistencias_tutor`: registro de asistencia creado por el tutor.
+- `confirmaciones_estudiante`: confirmación de participación realizada por el estudiante.
+
+Tiempos separados y obligatorios:
+- `asistencia_registrada_en`: momento en que el tutor registra asistencia.
+- `participacion_confirmada_en`: momento en que el estudiante confirma participación.
+- `inscripcion_confirmada_en`: momento de confirmación de inscripción; no debe confundirse con la confirmación de participación.
+
+Reglas:
+- Una inscripción puede tener cero o una participación.
+- Una participación puede tener cero o una asistencia del tutor y cero o una confirmación del estudiante.
+- La participación solo alcanza el estado VERIFICADA cuando existen ambos registros.
+- Si falta cualquiera de las dos acciones, no está verificada.
+- Solo una participación VERIFICADA habilita la calificación/reseña.
+- El sistema debe registrar quién realizó cada acción y cuándo.
+- El estudiante solo puede confirmar su propia participación.
+- El tutor solo puede registrar asistencia de participantes inscritos en sus propios cursos.
+- El tutor registra la asistencia una sola vez después de que el curso esté FINALIZADO, indicando que el estudiante participó en al menos una sesión. El estudiante confirma después de la finalización.
+- La verificación solo puede completarse después de FINALIZADO y cuando existan tanto la asistencia del tutor como la confirmación del estudiante.
+- No se registran asistencias por sesión en esta versión; se conserva una participación por inscripción.
+- No se debe marcar participación como verificada mediante una única casilla o campo manual.
+
+### 6.7. Calificaciones y reseñas
+
+- `calificaciones_resenas`: usuario autor, curso y/o participación verificada asociada, puntuación, comentario opcional y fecha.
+- La puntuación es obligatoria y debe estar entre 1 y 5.
+- El comentario es opcional.
+- La reseña solo puede registrarse si existe participación VERIFICADA.
+- No se permite que el tutor califique su propio curso.
+- Debe impedirse más de una calificación por participación verificada.
+
+### 6.8. Formularios y respuestas
+
+- `formularios`: título y versión identificable.
+- `preguntas_formulario`: preguntas asociadas a una versión del formulario.
+- `respuestas_formulario`: pregunta, respuesta, participación y fecha de envío.
+
+El administrador crea y gestiona formularios con preguntas predefinidas y versiones identificables. Una versión que ya tenga respuestas no se modifica; los cambios se publican como una versión nueva.
+
+Un estudiante autenticado puede responder una vez cada versión de formulario por participación VERIFICADA y consultar sus propias respuestas. Cada respuesta se vincula a la participación y a una pregunta de esa versión, con fecha de envío; se impide duplicar una respuesta a la misma pregunta para la misma participación y versión.
+
+El tutor propietario del curso consulta únicamente resultados agregados de formularios asociados a sus cursos. El administrador puede consultar todos los resultados. Ningún tutor puede consultar respuestas individuales ni resultados de otros tutores.
+
+### 6.9. Notificaciones
+
+- `notificaciones`: tipo, contenido, fecha de creación y estado/fecha de lectura.
+- `notificacion_usuario`: relación entre notificación y destinatario, cuando una notificación se envíe a varios usuarios.
+
+La primera versión utiliza exclusivamente notificaciones internas. Se generan para los eventos definidos en RF19 y se consultan desde la cuenta autenticada del destinatario. Se registra su estado o fecha de lectura. No se envían correos ni se integra un proveedor externo en esta versión.
+
+### 6.10. Desactivación e historial de cuentas
+
+La cuenta no se elimina físicamente como operación normal. Se desactiva para conservar historial y relaciones.
+
+- El usuario puede solicitar la desactivación de su cuenta.
+- El administrador puede desactivar y reactivar cuentas.
+- Debe conservarse el historial de solicitudes y cambios de estado.
+- Una cuenta desactivada no puede iniciar sesión ni ejecutar acciones protegidas.
+- La desactivación no debe borrar cursos, inscripciones, participaciones, reseñas ni registros históricos.
+- Registrar actor, fecha, estado anterior, estado nuevo y motivo cuando corresponda.
+
+Entidades sugeridas:
+- `solicitudes_desactivacion`.
+- `historial_estado_cuenta`.
+
+## 7. Reglas de negocio obligatorias
+
+1. El correo de usuario debe ser único.
+2. Las contraseñas deben almacenarse mediante hash seguro; nunca en texto plano.
+3. La cuenta de usuario es única aunque tenga más de un rol.
+4. Solo el administrador puede aprobar o rechazar solicitudes de habilitación.
+5. Solo un tutor habilitado puede publicar cursos.
+6. Un tutor solo puede modificar o cancelar sus propios cursos.
+7. Un curso puede incluir varias materias y cada materia tendrá contenidos propios dentro de la organización del temario.
+8. Solo los cursos PUBLICADOS aceptan inscripciones.
+9. No se puede superar el cupo total del curso.
+10. La cancelación de inscripción libera cupo.
+11. No se permiten inscripciones activas duplicadas.
+12. Se permite reinscripción tras cancelación si hay cupo, excepto cuando ya exista participación verificada.
+13. La asistencia del tutor y la confirmación del estudiante son independientes.
+14. La participación es VERIFICADA únicamente cuando ambas acciones están registradas.
+15. Solo una participación verificada permite calificar.
+16. La calificación exige de 1 a 5 estrellas; el comentario es opcional.
+17. Un tutor no puede calificar su propio curso.
+18. Las reseñas solo son visibles para usuarios autenticados y con permisos: tutor propietario y administrador.
+19. La desactivación conserva todos los registros históricos.
+20. Los reportes de tutor deben filtrar estrictamente por cursos propios.
+21. La condición gratuita/de pago es informativa; no implica pagos ni transacciones.
+22. Las operaciones que afecten cupos deben ser transaccionales.
+23. Las autorizaciones deben aplicarse en la lógica de negocio además de la interfaz.
+24. Los visitantes pueden buscar y consultar únicamente cursos PUBLICADOS y la información académica pública del tutor; no pueden consultar reseñas, puntuaciones ni información personal o documental restringida.
+25. Las inscripciones requieren autenticación y una cuenta activa con rol ESTUDIANTE.
+26. La participación se verifica después de FINALIZADO, con una asistencia registrada por el tutor y una confirmación del estudiante para la misma inscripción.
+27. CANCELADO y FINALIZADO son estados terminales; cancelar un curso cancela sus inscripciones activas en la misma transacción y conserva el origen de la cancelación.
+28. Las categorías se desactivan o reactivan, pero no se eliminan físicamente si están referenciadas por cursos.
+29. Los formularios son administrados por el administrador y versionados; el estudiante consulta sus respuestas y el tutor propietario solo consulta resultados agregados de sus cursos.
+30. Las notificaciones de la primera versión son exclusivamente internas.
+31. El catálogo académico se carga únicamente desde información oficial validada por la UAGRM; no se inventan facultades, carreras ni materias.
+
+## 8. Reportes
+
+### 8.1. RF22 – Reporte administrativo
+
+El administrador puede consultar:
+- Cantidad total de usuarios registrados, contando cada cuenta una sola vez.
+- Cantidad de estudiantes.
+- Cantidad de tutores.
+- Un usuario que tenga ambos roles cuenta en ambos indicadores de rol, pero una sola vez en el total general.
+- Cantidad de cuentas activas y desactivadas.
+- Solicitudes de habilitación.
+- Cursos publicados y cancelados.
+- Inscripciones.
+- Cursos con mayor cantidad de inscritos.
+
+Los reportes deben considerar los estados definidos y evitar duplicar usuarios en el total general.
+
+### 8.2. RF23 – Reporte del tutor
+
+Cada tutor solo puede consultar datos de sus propios cursos:
+- Cursos publicados.
+- Estudiantes inscritos.
+- Cupos totales y disponibles.
+- Participaciones verificadas.
+- Calificaciones.
+- Promedio de calificaciones.
+- Reseñas recibidas.
+
+El tutor no puede consultar reportes ni reseñas de cursos pertenecientes a otros tutores.
+
+## 9. Trazabilidad de requisitos RF01–RF23
+
+La implementación debe mantener una matriz de trazabilidad que conecte cada requisito con caso de uso, servicio de negocio, pantalla y tablas afectadas. Como mínimo:
+
+| RF | Área | Proceso principal |
+|---|---|---|
+| RF01 | Usuarios | Registro, autenticación y cierre de sesión |
+| RF02 | Usuarios | Consulta y actualización de perfil |
+| RF03 | Habilitación | Solicitud y carga de documentos |
+| RF04 | Habilitación | Revisión de solicitud y documentos |
+| RF05 | Habilitación | Aprobación/rechazo y registro de decisión |
+| RF06 | Perfil académico | Gestión de materias, conocimientos y experiencia |
+| RF07 | Cursos | Registro, consulta y actualización de cursos |
+| RF08 | Temarios | Creación y actualización de temarios/contenidos |
+| RF09 | Cursos | Publicación de cursos |
+| RF10 | Cursos | Modificación y cancelación de cursos |
+| RF11 | Búsqueda | Búsqueda de cursos |
+| RF12 | Búsqueda | Filtros de cursos |
+| RF13 | Búsqueda | Detalle de curso y perfil académico |
+| RF14 | Inscripciones | Inscripción, control de cupos y cancelación |
+| RF15 | Participación/inscripciones | Consulta de inscritos y registro de asistencia del tutor |
+| RF16 | Reseñas | Calificación y reseña tras participación verificada |
+| RF17 | Formularios | Respuesta a formulario de retroalimentación |
+| RF18 | Formularios/reseñas | Consulta de resultados según permisos |
+| RF19 | Notificaciones | Generación y consulta de notificaciones |
+| RF20 | Administración | Gestión de cuentas y roles |
+| RF21 | Administración | Gestión de categorías |
+| RF22 | Reportes | Reporte administrativo general |
+| RF23 | Reportes | Reporte de cursos propios del tutor |
+
+La descripción detallada de cada RF debe conservar el texto aprobado en la especificación de requisitos. Esta tabla es una guía de trazabilidad, no sustituye la especificación funcional.
+
+## 10. Seguridad, integridad y calidad
+
+- Validar entradas en la lógica de negocio.
+- Utilizar protección CSRF y mecanismos de autenticación de Laravel.
+- Aplicar autorización por rol y propiedad del recurso.
+- Proteger los documentos de habilitación contra acceso público no autorizado.
+- Aplicar claves foráneas, restricciones CHECK, índices y unicidad donde corresponda.
+- Usar transacciones en inscripción/cupos y procesos que actualicen varias tablas.
+- No exponer datos personales ni reseñas a usuarios no autorizados.
+- Registrar errores sin almacenar contraseñas, tokens ni datos sensibles.
+- Preparar pruebas unitarias y de integración para reglas críticas.
+- Verificar el objetivo de rendimiento definido en el proyecto mediante pruebas; no afirmar que se cumple sin medirlo.
+
+## 11. Decisiones que no deben modificarse unilateralmente
+
+Codex no debe:
+- Cambiar Laravel, PHP 8.4 o PostgreSQL 17.
+- Cambiar la arquitectura de tres capas.
+- Introducir microservicios, MVC como arquitectura, otra base de datos o un frontend separado.
+- Implementar pagos, pasarela o transacciones monetarias.
+- Permitir que Livewire consulte Eloquent directamente o contenga reglas de negocio.
+- Eliminar la doble confirmación de participación.
+- Confundir confirmación de inscripción con confirmación de participación.
+- Hacer públicas las reseñas.
+- Permitir que un tutor vea reseñas o reportes de otros tutores.
+- Eliminar físicamente cuentas como flujo normal.
+- Eliminar físicamente categorías que estén asociadas a cursos.
+- Hacer públicas reseñas o puntuaciones; el acceso público se limita a la búsqueda, los cursos PUBLICADOS y los campos académicos públicos definidos.
+- Marcar una participación como verificada antes de finalizar el curso o sin las dos confirmaciones independientes.
+- Reabrir cursos CANCELADOS o FINALIZADOS.
+- Enviar notificaciones mediante correo o un proveedor externo en la primera versión.
+- Cargar o inventar datos del catálogo académico sin validación oficial de la UAGRM.
+- Modificar RF01–RF23.
+- Crear tablas, campos o funcionalidades no justificadas por este diseño o por requisitos aprobados sin consultar primero.
+
+Si encuentra una contradicción, dato faltante o mejora necesaria, debe detenerse en ese punto, explicar el problema y solicitar autorización antes de cambiar el diseño.
+
+## 12. Secuencia recomendada de implementación
+
+La implementación debe ser incremental y verificable:
+
+1. Inspeccionar el entorno y la carpeta del proyecto.
+2. Confirmar versiones de PHP, Composer, Laravel, Node/npm y conexión a PostgreSQL sin modificar configuraciones existentes.
+3. Revisar el repositorio Git y crear/confirmar una rama de trabajo con autorización del usuario.
+4. Preparar estructura de carpetas para las tres capas.
+5. Diseñar y revisar migraciones y relaciones antes de ejecutarlas.
+6. Implementar autenticación, usuarios y roles.
+7. Implementar habilitación de tutores.
+8. Implementar estructura académica y perfiles.
+9. Implementar cursos, materias, horarios y temarios.
+10. Implementar búsqueda y filtros.
+11. Implementar inscripción y control transaccional de cupos.
+12. Implementar asistencia del tutor y confirmación del estudiante.
+13. Implementar reseñas, formularios y permisos de lectura.
+14. Implementar notificaciones, administración y reportes.
+15. Ejecutar pruebas por módulo y pruebas de integración.
+16. Documentar cómo ejecutar y probar el sistema.
+
+No ejecutar migraciones destructivas ni borrar datos existentes. Antes de crear o alterar tablas, mostrar el plan de migraciones y solicitar confirmación del usuario.
+
+---
+
+**Fin del diseño técnico corregido.**

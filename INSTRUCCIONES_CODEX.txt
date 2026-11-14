@@ -1,0 +1,74 @@
+# INSTRUCCIONES PARA CODEX
+## Inicio de implementación del Sistema de Tutorías UAGRM
+
+Actúa como asistente de desarrollo de software dentro de este repositorio.
+
+### Archivos de referencia
+Lee primero y por completo:
+1. `Diseño_CORREGIDO.txt` – referencia técnica obligatoria.
+2. La documentación del proyecto y la especificación de requisitos RF01–RF23 que se encuentren en la carpeta.
+
+Si existe contradicción entre archivos, no elijas por tu cuenta. Informa qué se contradice y solicita decisión.
+
+### Objetivo
+Comenzar la implementación del Sistema Web de Apoyo Académico Mediante Búsqueda y Filtrado de Tutorías para la UAGRM siguiendo exactamente el diseño corregido.
+
+### Reglas obligatorias
+- PHP 8.4.27, Laravel y PostgreSQL 17.
+- Arquitectura lógica estricta de tres capas: Presentación → Lógica de negocio → Acceso a datos.
+- Aplicación Laravel única; no microservicios.
+- No utilizar MVC como arquitectura del sistema.
+- Blade/Livewire solo en presentación.
+- Livewire no consulta Eloquent/PostgreSQL directamente y no contiene reglas de negocio.
+- La lógica de negocio concentra casos de uso, reglas y autorizaciones.
+- PostgreSQL es la base de datos.
+- No implementar pagos ni pasarelas.
+- No cambiar los requisitos RF01–RF23.
+- Respetar la doble confirmación de participación: registro de asistencia por tutor y confirmación por estudiante.
+- La reseña solo se permite después de participación verificada.
+- Un usuario puede ser estudiante y tutor simultáneamente; administrador es independiente.
+- La desactivación de cuentas conserva el historial.
+- No hacer cambios arquitectónicos o funcionales sin aprobación expresa.
+
+### Entorno conocido
+- Proyecto en Windows.
+- PHP 8.4.27 disponible en `C:\PHP84`.
+- Composer instalado y operativo.
+- PostgreSQL 17 instalado y operativo.
+- Base de datos existente: `sistema_tutorias_uagrm`.
+- Node.js y npm instalados.
+- Git instalado.
+- Postman instalado.
+- XAMPP está instalado; no modificarlo.
+- Nginx no está instalado. No instalarlo para el desarrollo local inicial.
+
+No solicites ni escribas contraseñas en archivos, código, terminales compartidas o conversaciones. Utiliza variables de entorno y solicita al usuario que introduzca cualquier secreto directamente en su terminal cuando sea necesario.
+
+### Primera tarea: diagnóstico, no programación inmediata
+Antes de crear o modificar archivos:
+1. Inspecciona la estructura actual del repositorio y el estado de Git.
+2. Comprueba las versiones de PHP, Composer, Laravel, Node/npm y Git.
+3. Comprueba si existe un proyecto Laravel y qué archivos contiene.
+4. Comprueba la configuración de conexión a PostgreSQL sin mostrar secretos.
+5. No imprimas el contenido de `.env` ni contraseñas.
+6. No ejecutes migraciones ni comandos que borren, sobrescriban o alteren datos.
+7. No instales ni actualices dependencias todavía.
+
+Después presenta un informe breve con:
+- Estado actual del proyecto.
+- Herramientas detectadas y versiones.
+- Estado de conexión/configuración de PostgreSQL, ocultando credenciales.
+- Archivos existentes que podrían verse afectados.
+- Problemas encontrados.
+- Plan de implementación por etapas.
+- Primera etapa concreta que recomiendas ejecutar.
+
+### Inicio controlado
+Una vez presentado el diagnóstico, espera la confirmación del usuario antes de realizar cambios. Cuando el usuario autorice continuar, trabaja en pasos pequeños:
+- Explica qué vas a modificar.
+- Realiza solo la etapa autorizada.
+- Ejecuta las comprobaciones pertinentes.
+- Informa qué archivos cambiaste y qué resultado obtuviste.
+- Espera el resultado o autorización del usuario antes de avanzar a una etapa que pueda afectar base de datos, dependencias o archivos existentes.
+
+No inventes resultados. No afirmes que algo funciona si no lo has ejecutado y verificado.
