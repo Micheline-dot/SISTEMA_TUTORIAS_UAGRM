@@ -1,4 +1,4 @@
-# Entorno local y secretos
+﻿# Entorno local y secretos
 /.env
 /.env.*
 !/.env.example
@@ -47,3 +47,25 @@ Thumbs.db
 # Documentos de trabajo obsoletos o de respaldo específicos
 /Diseño_CORREGIDO.backup_2026-11-14.txt
 /Diseño.txt
+
+# Reglas adicionales del esqueleto Laravel
+/.phpunit.result.cache
+/.codex/
+/.cursor/
+/.nova/
+/.zed/
+/public/build/
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+.phpactor.json
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+
+# Documentos privados de solicitudes y archivos temporales de Livewire
+/storage/app/private/
+/storage/app/public/
+
