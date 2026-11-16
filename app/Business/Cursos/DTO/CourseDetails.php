@@ -13,6 +13,12 @@ final readonly class CourseDetails
         public ?CourseModality $modality,
         public ?int $totalSeats,
         public ?bool $isFree,
+        public ?string $categoryId = null,
+        public ?string $categoryName = null,
+        public ?string $startDate = null,
+        public ?string $endDate = null,
+        public ?string $cancellationReason = null,
+        public int $activeEnrollments = 0,
     ) {
     }
 }

@@ -51,8 +51,8 @@ erDiagram
 | perfil_academico | id_perfil_academico PK, biografia, enlaces, conocimiento (text), id_tutor único FK→tutor |
 | categoria | id_categoria PK, nombre v100 único |
 | curso | id_curso PK, titulo v150, modalidad v20, cupos, es_gratuito, id_categoria FK, id_tutor FK→tutor; **(+)** descripcion, fecha_inicio, fecha_finalizacion, estado (`BORRADOR`/`PUBLICADO`/`CANCELADO`/`FINALIZADO`), motivo_cancelacion, fecha_cancelacion. **(+)** titulo/modalidad/cupos/es_gratuito/id_categoria anulables mientras el curso es borrador |
-| temario | PK (id_curso, id_temario identity), nombre v150, fecha, estado v20; cascade con curso |
-| recurso | PK (id_recurso identity, id_temario, id_curso), nombre v150; FK (id_curso,id_temario)→temario cascade |
+| temario | PK (id_curso, id_temario identity), nombre v150, fecha, estado v20; cascade con curso; **(+)** estado `PENDIENTE`/`COMPLETADO` (CHECK, default PENDIENTE) |
+| recurso | PK (id_recurso identity, id_temario, id_curso), nombre v150; FK (id_curso,id_temario)→temario cascade; **(+)** enlace v255 (material como enlace http/https) |
 | inscripcion | id_inscripcion PK, fecha, estado bool (true activa), motivo_cancelacion v500, id_usuario FK→usuario |
 | curso_inscripcion | PK (id_inscripcion, id_curso), estado v20: `activa`, `asistio` (tutor registró asistencia), `confirmada` (estudiante confirmó), `cancelada`, `eliminada` (retirado por tutor) |
 | calificacion_resena | id_calificacion PK, puntuacion (1–5 **(+)**), fecha, comentario, único (id_inscripcion,id_curso) FK→curso_inscripcion |

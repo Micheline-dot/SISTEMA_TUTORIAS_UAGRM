@@ -8,6 +8,8 @@ use App\Presentation\Livewire\Tutor\PerfilAcademico;
 use App\Presentation\Livewire\Usuarios\MiPerfil;
 use App\Presentation\Livewire\Administracion\GestionarTutorias;
 use App\Presentation\Livewire\Administracion\GestionarUsuarios;
+use App\Presentation\Livewire\Administracion\GestionarCategorias;
+use App\Presentation\Livewire\Cursos\GestionarTutoria;
 use App\Presentation\Livewire\Auth\Login;
 use App\Presentation\Livewire\Auth\Register;
 use App\Presentation\Livewire\Cursos\CatalogoTutorias;
@@ -62,6 +64,9 @@ Route::middleware('auth')->group(function () {
             ->name('tutor.tutorias');
         Route::get('/tutor/perfil-academico', PerfilAcademico::class)
             ->name('tutor.perfil-academico');
+        Route::get('/tutor/tutorias/{courseId}', GestionarTutoria::class)
+            ->whereNumber('courseId')
+            ->name('tutor.tutoria');
         Route::get('/tutor/tutorias/{courseId}/asistencia', GestionarAsistencia::class)
             ->whereNumber('courseId')
             ->name('tutor.asistencia');
@@ -78,5 +83,7 @@ Route::middleware('auth')->group(function () {
             ->name('admin.tutorias');
         Route::get('/usuarios', GestionarUsuarios::class)
             ->name('admin.usuarios');
+        Route::get('/categorias', GestionarCategorias::class)
+            ->name('admin.categorias');
     });
 });

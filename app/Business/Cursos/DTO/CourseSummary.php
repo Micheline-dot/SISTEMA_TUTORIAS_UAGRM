@@ -10,6 +10,11 @@ final readonly class CourseSummary
         public CourseStatus $status,
         public ?string $title,
         public ?CourseModality $modality,
+        public ?string $categoryName = null,
+        public ?string $startDate = null,
+        public ?string $endDate = null,
+        public ?int $totalSeats = null,
+        public int $activeEnrollments = 0,
     ) {
     }
 }

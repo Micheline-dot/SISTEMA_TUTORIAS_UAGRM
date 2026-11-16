@@ -27,10 +27,10 @@ Un usuario puede ser estudiante y tutor a la vez. El sistema **no procesa pagos*
 | CU04 | RF04 | Revisar solicitud | Alta | ✅ | — |
 | CU05 | RF05 | Validar solicitud | Alta | ✅ | — (notifica aprobación/rechazo con motivo; admins reciben aviso de solicitud nueva) |
 | CU06 | RF06 | Gestionar perfil académico | Alta | ✅ | — (biografía, enlaces http/https, conocimientos como etiquetas) |
-| CU07 | RF07 | Gestionar cursos | Alta | 🟡 | Categoría, eliminar borrador, exigir perfil académico |
-| CU08 | RF08 | Gestionar temarios | Alta | ⬜ | Temarios y recursos (enlaces) |
-| CU09 | RF09 | Publicar curso | Alta | ✅ | Confirmación previa |
-| CU10 | RF10 | Gestionar curso publicado | Alta | 🟡 | Tutor: modificar cupos/fechas, cancelar con motivo |
+| CU07 | RF07 | Gestionar cursos | Alta | ✅ | — (borrador con categoría y fechas, eliminar borrador, exige perfil académico completo) |
+| CU08 | RF08 | Gestionar temarios | Alta | ✅ | — (temas con fecha dentro del periodo y estado PENDIENTE/COMPLETADO; recursos como enlaces http/https) |
+| CU09 | RF09 | Publicar curso | Alta | ✅ | — (valida datos completos, inicio no pasado y al menos un tema; confirmación previa) |
+| CU10 | RF10 | Gestionar curso publicado | Alta | ✅ | — (cupos ≥ inscritos, fechas con aviso a inscritos, cancelar con motivo, finalizar) |
 | CU11 | RF11 | Realizar búsqueda | Alta | 🟡 | Buscar por nombre del tutor y categoría |
 | CU12 | RF12 | Filtrar resultados | Alta | 🟡 | Filtro por categoría, valoración y cupos |
 | CU13 | RF13 | Visualizar detalles del curso | Alta | ⬜ | Detalle + temario + perfil del tutor |
@@ -41,7 +41,7 @@ Un usuario puede ser estudiante y tutor a la vez. El sistema **no procesa pagos*
 | CU18 | RF18 | Ver reseñas y formularios | Media | ⬜ | Vista del tutor |
 | CU19 | RF19 | Recibir notificaciones | Media | ✅ | — (campana con contador en todos los roles, bandeja, marcar una/todas) |
 | CU20 | RF20 | Gestionar usuarios | Alta | ✅ | — (buscar/filtrar, crear estudiante/admin, editar, activar/desactivar, quitar rol tutor cancelando sus tutorías publicadas) |
-| CU21 | RF21 | Gestionar categorías | Media | ⬜ | CRUD categorías |
+| CU21 | RF21 | Gestionar categorías | Media | ✅ | — (crear, renombrar, eliminar solo si no la usa ningún curso; 14 iniciales por seeder) |
 | CU22 | RF22 | Reportes del administrador | Media | ⬜ | Totales, mejores tutores, categoría/facultad más solicitada |
 | CU23 | RF23 | Reportes del tutor | Media | ⬜ | Mejor curso, promedio inscritos, publicados/concluidos |
 
@@ -67,10 +67,10 @@ Extra ya implementado: administración general de tutorías (listar, detalle, ca
 - 2.3 ✅ CU06 Perfil académico del tutor.
 
 **Fase 3 — Cursos**
-- 3.1 CU21 Categorías (requisito de CU07).
-- 3.2 CU07 completar gestión de cursos.
-- 3.3 CU08 Temarios y recursos.
-- 3.4 CU09 / CU10 publicar y gestionar curso publicado.
+- 3.1 ✅ CU21 Categorías (requisito de CU07) — CategorySeeder.
+- 3.2 ✅ CU07 completar gestión de cursos.
+- 3.3 ✅ CU08 Temarios y recursos (migración 100021: recurso.enlace, temario.estado).
+- 3.4 ✅ CU09 / CU10 publicar y gestionar curso publicado.
 
 **Fase 4 — Búsqueda**: 4.1 CU11 · 4.2 CU12 · 4.3 CU13.
 

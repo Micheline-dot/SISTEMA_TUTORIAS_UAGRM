@@ -1,284 +1,113 @@
-﻿<div>
+﻿<div class="mt">
     <style>
-        .intro {
-            background: linear-gradient(120deg, #173c68, #246b9c);
-            color: white;
-            border-radius: 15px;
-            padding: 27px;
-            margin-bottom: 25px;
-        }
-
-        .intro h2 { margin: 0 0 8px; }
-        .intro p { margin: 0; color: #e0edf8; line-height: 1.5; }
-
-        .toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin: 25px 0;
-        }
-
-        .toolbar h2 { margin: 0; font-size: 20px; }
-
-        .btn {
-            border: 0;
-            border-radius: 8px;
-            padding: 11px 17px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .btn-primary { background: #174ea6; color: white; }
-        .btn-success { background: #16804a; color: white; }
-        .btn-light { background: #e8edf4; color: #34445b; }
-
-        .course-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 18px;
-        }
-
-        .course {
-            background: white;
-            padding: 22px;
-            border-radius: 12px;
-            box-shadow: 0 3px 14px rgba(25,45,75,.06);
-        }
-
-        .course h3 { margin: 0 0 12px; font-size: 18px; }
-        .course p { color: #718096; line-height: 1.5; }
-
-        .status {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            background: #fff4d6;
-            color: #8b6414;
-            margin-bottom: 12px;
-        }
-
-        .status-published {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .meta {
-            color: #65738a;
-            font-size: 13px;
-            margin: 12px 0;
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 17px;
-        }
-
-        .form-panel, .empty, .notice {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 3px 14px rgba(25,45,75,.05);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .field { margin-bottom: 16px; }
-        .field.full { grid-column: 1 / -1; }
-
-        .field label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 7px;
-            font-size: 14px;
-        }
-
-        .field input, .field textarea, .field select {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font: inherit;
-            background: white;
-        }
-
-        .field textarea { min-height: 110px; resize: vertical; }
-
-        .check {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            margin: 12px 0;
-        }
-
-        .check input { width: auto; }
-
-        .error {
-            color: #b42318;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        .success {
-            background: #dcfce7;
-            color: #166534;
-            padding: 13px 16px;
-            border-radius: 8px;
-            margin-bottom: 18px;
-        }
-
-        .alert {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 13px 16px;
-            border-radius: 8px;
-            margin-bottom: 18px;
-        }
-
-        @media(max-width: 650px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .field.full { grid-column: auto; }
-            .toolbar { align-items: flex-start; flex-direction: column; }
-        }
+        .mt { display: grid; gap: 18px; }
+        .mt .barra { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .mt .filtros { display: flex; gap: 8px; flex-wrap: wrap; }
+        .mt .chip { padding: 7px 13px; border-radius: 999px; border: 1px solid #c5d1e0; background: white; cursor: pointer; font: inherit; font-size: 13.5px; color: #243047; }
+        .mt .chip.on { background: #174ea6; border-color: #174ea6; color: white; }
+        .mt .btn { padding: 10px 16px; border: 0; border-radius: 8px; background: #174ea6; color: white; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; }
+        .mt .btn:disabled { background: #8d9db3; cursor: not-allowed; }
+        .mt .btn.sec { background: #e9eef5; color: #243047; }
+        .mt .btn.mini { padding: 7px 12px; font-size: 13px; }
+        .mt .lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .mt .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 3px 14px rgba(25, 45, 75, .06); display: flex; flex-direction: column; gap: 10px; }
+        .mt .card h3 { margin: 0; font-size: 17px; }
+        .mt .meta { color: #65738a; font-size: 13.5px; line-height: 1.6; }
+        .mt .estado { align-self: flex-start; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+        .mt .BORRADOR { background: #fff4d6; color: #8b6414; }
+        .mt .PUBLICADO { background: #e7f6ec; color: #1e6b3a; }
+        .mt .CANCELADO { background: #fdecea; color: #9b2c22; }
+        .mt .FINALIZADO { background: #eceff3; color: #4a5568; }
+        .mt .acciones { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+        .mt .warn { background: #fff4e5; color: #8a5300; border-radius: 10px; padding: 14px 16px; line-height: 1.5; }
+        .mt .ok { background: #e8f6ee; color: #1d6b3f; border-radius: 8px; padding: 12px 14px; }
+        .mt .vacio { background: white; border-radius: 12px; padding: 30px; text-align: center; color: #718096; }
+        .mt .fondo { position: fixed; inset: 0; background: rgba(15, 30, 55, .45); display: grid; place-items: center; padding: 16px; z-index: 50; }
+        .mt .modal { background: white; border-radius: 14px; padding: 24px; width: min(100%, 480px); }
+        .mt .modal h2 { margin: 0 0 6px; font-size: 19px; }
+        .mt .modal label { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 5px; }
+        .mt .modal input, .mt .modal select { width: 100%; padding: 10px 12px; border: 1px solid #c5d1e0; border-radius: 8px; font: inherit; box-sizing: border-box; background: white; }
+        .mt .modal .pie { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+        .mt .error { color: #b42318; font-size: 13px; margin-top: 4px; }
+        .mt .hint { color: #718096; font-size: 13.5px; margin: 0; line-height: 1.5; }
     </style>
 
-    @if (session()->has('success'))
-        <div class="success">{{ session('success') }}</div>
-    @endif
+    @if (session('ok')) <div class="ok">{{ session('ok') }}</div> @endif
 
-    @error('general')
-        <div class="alert">{{ $message }}</div>
-    @enderror
+    @unless ($perfilCompleto)
+        <div class="warn">
+            <strong>Completa tu perfil académico para crear tutorías.</strong>
+            Los estudiantes verán tu biografía y conocimientos junto a cada tutoría.
+            <a href="{{ route('tutor.perfil-academico') }}">Ir a mi perfil académico →</a>
+        </div>
+    @endunless
 
-    <section class="intro">
-        <h2>Gestiona tus tutorÃ­as acadÃ©micas</h2>
-        <p>
-            Crea tus tutorÃ­as, guarda los datos como borrador y publÃ­calas
-            cuando estÃ©n listas para que los estudiantes puedan encontrarlas.
-        </p>
-    </section>
-
-    <div class="toolbar">
-        <h2>Mis tutorÃ­as registradas</h2>
-        <button type="button" class="btn btn-primary" wire:click="nuevaTutoria">
-            + Nueva tutorÃ­a
-        </button>
+    <div class="barra">
+        <div class="filtros">
+            @foreach (['' => 'Todas', 'BORRADOR' => 'Borradores', 'PUBLICADO' => 'Publicadas', 'FINALIZADO' => 'Finalizadas', 'CANCELADO' => 'Canceladas'] as $valor => $etiqueta)
+                <button class="chip {{ $filtro === $valor ? 'on' : '' }}" wire:click="$set('filtro', '{{ $valor }}')">{{ $etiqueta }}</button>
+            @endforeach
+        </div>
+        <button class="btn" wire:click="nuevaTutoria" @disabled(! $perfilCompleto)>+ Nueva tutoría</button>
     </div>
 
-    @if ($showForm)
-        <section class="form-panel">
-            <h2>{{ $courseId ? 'Editar borrador' : 'Registrar nueva tutorÃ­a' }}</h2>
-            <p>Completa los datos disponibles. Puedes guardar informaciÃ³n parcial como borrador.</p>
-
-            <form wire:submit="guardarTutoria">
-                <div class="form-grid">
-                    <div class="field full">
-                        <label for="title">TÃ­tulo de la tutorÃ­a</label>
-                        <input id="title" type="text" wire:model="title"
-                               placeholder="Ej. TutorÃ­a de CÃ¡lculo I">
-                        @error('title') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="field full">
-                        <label for="description">DescripciÃ³n</label>
-                        <textarea id="description" wire:model="description"
-                                  placeholder="Describe los temas que desarrollarÃ¡s..."></textarea>
-                        @error('description') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="field">
-                        <label for="modality">Modalidad</label>
-                        <select id="modality" wire:model="modality">
-                            <option value="">Seleccionar modalidad</option>
-                            <option value="PRESENCIAL">Presencial</option>
-                            <option value="VIRTUAL">Virtual</option>
-                            <option value="HIBRIDA">HÃ­brida</option>
-                        </select>
-                        @error('modality') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="field">
-                        <label for="totalSeats">Cantidad de cupos</label>
-                        <input id="totalSeats" type="number" min="1"
-                               wire:model="totalSeats" placeholder="Ej. 20">
-                        @error('totalSeats') <div class="error">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <label class="check">
-                    <input type="checkbox" wire:model="isFree">
-                    Esta tutorÃ­a es gratuita
-                </label>
-
-                <div class="actions">
-                    <button type="submit" class="btn btn-primary">
-                        Guardar borrador
-                    </button>
-                    <button type="button" class="btn btn-light" wire:click="cancelarFormulario">
-                        Cancelar
-                    </button>
-                </div>
-            </form>
-        </section>
-    @endif
-
-    @if (count($tutorias) > 0)
-        <section class="course-list">
-            @foreach ($tutorias as $tutoria)
-                <article class="course" wire:key="tutoria-{{ $tutoria->id }}">
-                    <span class="status {{ $tutoria->status->value === 'PUBLICADO' ? 'status-published' : '' }}">
-                        {{ $tutoria->status->value }}
-                    </span>
-
-                    <h3>{{ $tutoria->title ?: 'TutorÃ­a sin tÃ­tulo' }}</h3>
-
+    @if (count($tutorias) === 0)
+        <div class="vacio">{{ $filtro === '' ? 'Todavía no creaste tutorías.' : 'No hay tutorías con ese estado.' }}</div>
+    @else
+        <div class="lista">
+            @foreach ($tutorias as $t)
+                <article class="card" wire:key="tutoria-{{ $t->id }}">
+                    <span class="estado {{ $t->status->value }}">{{ ucfirst(mb_strtolower($t->status->value)) }}</span>
+                    <h3>{{ $t->title ?: 'Sin título' }}</h3>
                     <div class="meta">
-                        Modalidad:
-                        {{ $tutoria->modality?->value ?? 'Sin definir' }}
-                    </div>
-
-                    <div class="meta">
-                        CÃ³digo de tutorÃ­a: {{ $tutoria->id }}
-                    </div>
-
-                    <div class="actions">
-                        @if ($tutoria->status->value === 'BORRADOR')
-                            <button type="button" class="btn btn-light"
-                                    wire:click="editarTutoria('{{ $tutoria->id }}')">
-                                Editar
-                            </button>
-
-                            <button type="button" class="btn btn-success"
-                                    wire:click="publicarTutoria('{{ $tutoria->id }}')"
-                                    wire:confirm="Â¿EstÃ¡s seguro de publicar esta tutorÃ­a?">
-                                Publicar
-                            </button>
+                        {{ $t->categoryName ?? 'Sin categoría' }}
+                        @if ($t->modality) · {{ ucfirst(mb_strtolower($t->modality->value)) }} @endif
+                        <br>
+                        @if ($t->startDate)
+                            {{ \Illuminate\Support\Carbon::parse($t->startDate)->format('d/m/Y') }}
+                            @if ($t->endDate) – {{ \Illuminate\Support\Carbon::parse($t->endDate)->format('d/m/Y') }} @endif
+                        @else
+                            Sin fechas
                         @endif
-
-                        @if ($tutoria->status->value === 'PUBLICADO')
-                            <a class="btn btn-primary"
-                               href="{{ route('tutor.asistencia', $tutoria->id) }}">
-                                Gestionar asistencia
-                            </a>
+                        @if ($t->totalSeats)
+                            <br>{{ $t->activeEnrollments }} / {{ $t->totalSeats }} inscritos
+                        @endif
+                    </div>
+                    <div class="acciones">
+                        <a class="btn mini" href="{{ route('tutor.tutoria', $t->id) }}" wire:navigate>Gestionar</a>
+                        @if (in_array($t->status->value, ['PUBLICADO', 'FINALIZADO'], true))
+                            <a class="btn sec mini" href="{{ route('tutor.asistencia', $t->id) }}">Asistencia</a>
                         @endif
                     </div>
                 </article>
             @endforeach
-        </section>
-    @else
-        <section class="empty">
-            <h3>AÃºn no tienes tutorÃ­as registradas</h3>
-            <p>Selecciona Â«Nueva tutorÃ­aÂ» para comenzar a crear tu primera tutorÃ­a acadÃ©mica.</p>
-        </section>
+        </div>
+    @endif
+
+    @if ($mostrarNueva)
+        <div class="fondo" wire:click.self="cerrarNueva">
+            <form class="modal" wire:submit="crear">
+                <h2>Nueva tutoría</h2>
+                <p class="hint">Se crea como borrador. Después completas descripción, fechas, cupos y temario.</p>
+
+                <label for="titulo">Título</label>
+                <input id="titulo" type="text" wire:model="titulo" maxlength="150" placeholder="Ej. Repaso de Cálculo I">
+                @error('titulo') <div class="error">{{ $message }}</div> @enderror
+
+                <label for="categoria">Categoría</label>
+                <select id="categoria" wire:model="categoria">
+                    <option value="">Selecciona una categoría</option>
+                    @foreach ($categorias as $cat)
+                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+                @error('categoria') <div class="error">{{ $message }}</div> @enderror
+
+                <div class="pie">
+                    <button type="button" class="btn sec" wire:click="cerrarNueva">Cancelar</button>
+                    <button type="submit" class="btn" wire:loading.attr="disabled">Crear borrador</button>
+                </div>
+            </form>
+        </div>
     @endif
 </div>

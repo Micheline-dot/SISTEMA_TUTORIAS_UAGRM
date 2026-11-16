@@ -43,6 +43,18 @@ final class BusinessServiceProvider extends ServiceProvider
         $this->app->bind(CourseRepository::class, EloquentCourseRepository::class);
         $this->app->bind(AdminCourseRepository::class, EloquentAdminCourseRepository::class);
         $this->app->bind(TutorEligibility::class, EloquentTutorEligibility::class);
+        $this->app->bind(
+            \App\Business\Categorias\Contracts\CategoryRepository::class,
+            \App\DataAccess\PostgreSQL\Categorias\Repositories\EloquentCategoryRepository::class
+        );
+        $this->app->bind(
+            \App\Business\Cursos\Contracts\SyllabusRepository::class,
+            \App\DataAccess\PostgreSQL\Courses\Repositories\EloquentSyllabusRepository::class
+        );
+        $this->app->bind(
+            \App\Business\Cursos\Contracts\CourseLifecycleRepository::class,
+            \App\DataAccess\PostgreSQL\Courses\Repositories\EloquentCourseLifecycleRepository::class
+        );
 
         $this->app->bind(UserRepository::class, EloquentUserRepository::class);
         $this->app->bind(UserProfileRepository::class, EloquentUserProfileRepository::class);

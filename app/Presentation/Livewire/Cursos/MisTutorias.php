@@ -2,61 +2,47 @@
 
 namespace App\Presentation\Livewire\Cursos;
 
-use Livewire\Component;
-use Illuminate\Contracts\View\View;
-
+use App\Business\Categorias\UseCases\ManageCategories;
+use App\Business\Cursos\DTO\CourseDraftData;
+use App\Business\Cursos\DTO\CreateCourseDraftInput;
+use App\Business\Cursos\DTO\InvalidCourseDraftData;
+use App\Business\Cursos\DTO\ListTutorCoursesInput;
+use App\Business\Cursos\UseCases\AcademicProfileIncomplete;
 use App\Business\Cursos\UseCases\CreateCourseDraft;
 use App\Business\Cursos\UseCases\ListTutorCourses;
-use App\Business\Cursos\UseCases\GetTutorCourseDetails;
-use App\Business\Cursos\UseCases\UpdateCourseDraft;
-use App\Business\Cursos\UseCases\PublishCourseDraft;
+use App\Business\Usuarios\UseCases\ManageAcademicProfile;
+use Illuminate\Contracts\View\View;
+use Livewire\Component;
 
-use App\Business\Cursos\DTO\CourseDraftData;
-use App\Business\Cursos\DTO\CourseDraftPatch;
-use App\Business\Cursos\DTO\CourseModality;
-use App\Business\Cursos\DTO\CreateCourseDraftInput;
-use App\Business\Cursos\DTO\ListTutorCoursesInput;
-use App\Business\Cursos\DTO\TutorCourseDetailsInput;
-use App\Business\Cursos\DTO\UpdateCourseDraftInput;
-use App\Business\Cursos\DTO\FieldChange;
-
+/**
+ * CU07 Gestionar cursos: lista de tutorías del tutor y creación de borradores.
+ * Cada tutoría se gestiona en su propia pantalla (GestionarTutoria).
+ */
 final class MisTutorias extends Component
 {
+    public bool $mostrarNueva = false;
+
+    public string $titulo = '';
+
+    public string $categoria = '';
+
+    public string $filtro = '';
+
     protected CreateCourseDraft $createCourse;
     protected ListTutorCourses $listCourses;
-    protected GetTutorCourseDetails $getCourse;
-    protected UpdateCourseDraft $updateCourse;
-    protected PublishCourseDraft $publishCourse;
-
-    public ?string $courseId = null;
-
-    public string $title = '';
-    public string $description = '';
-    public string $modality = '';
-    public string $totalSeats = '';
-    public bool $isFree = true;
-
-    public bool $showForm = false;
+    protected ManageCategories $categorias;
+    protected ManageAcademicProfile $perfilAcademico;
 
     public function boot(
         CreateCourseDraft $createCourse,
         ListTutorCourses $listCourses,
-        GetTutorCourseDetails $getCourse,
-        UpdateCourseDraft $updateCourse,
-        PublishCourseDraft $publishCourse,
+        ManageCategories $categorias,
+        ManageAcademicProfile $perfilAcademico,
     ): void {
         $this->createCourse = $createCourse;
         $this->listCourses = $listCourses;
-        $this->getCourse = $getCourse;
-        $this->updateCourse = $updateCourse;
-        $this->publishCourse = $publishCourse;
-    }
-
-    public function mount(): void
-    {
-        $roles = auth()->user()->nombresRoles();
-
-        abort_unless(in_array('TUTOR', $roles, true), 403);
+        $this->categorias = $categorias;
+        $this->perfilAcademico = $perfilAcademico;
     }
 
     protected function tutorId(): string
@@ -66,151 +52,60 @@ final class MisTutorias extends Component
 
     public function nuevaTutoria(): void
     {
-        $this->resetFormulario();
-        $this->showForm = true;
+        $this->reset('titulo', 'categoria');
+        $this->resetValidation();
+        $this->mostrarNueva = true;
     }
 
-    public function editarTutoria(string $id): void
+    public function cerrarNueva(): void
     {
-        try {
-            $course = $this->getCourse->execute(
-                new TutorCourseDetailsInput(
-                    tutorId: $this->tutorId(),
-                    courseId: $id,
-                )
-            );
-
-            if ($course->status !== \App\Business\Cursos\DTO\CourseStatus::BORRADOR) {
-                $this->addError('general', 'Solo puedes editar tutorías en estado borrador.');
-                return;
-            }
-
-            $this->courseId = $course->id;
-            $this->title = $course->title ?? '';
-            $this->description = $course->description ?? '';
-            $this->modality = $course->modality?->value ?? '';
-            $this->totalSeats = $course->totalSeats === null
-                ? ''
-                : (string) $course->totalSeats;
-            $this->isFree = $course->isFree ?? true;
-
-            $this->resetValidation();
-            $this->showForm = true;
-        } catch (\Throwable $e) {
-            report($e);
-            $this->addError('general', 'No se pudo recuperar la tutoría seleccionada.');
-        }
+        $this->mostrarNueva = false;
+        $this->resetValidation();
     }
 
-    public function guardarTutoria(): void
+    public function crear()
     {
         $this->validate([
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:5000',
-            'modality' => 'nullable|in:PRESENCIAL,VIRTUAL,HIBRIDA',
-            'totalSeats' => 'nullable|integer|min:1',
-            'isFree' => 'required|boolean',
-        ]);
+            'titulo' => ['required', 'string', 'min:3', 'max:150'],
+            'categoria' => ['required', 'string'],
+        ], [], ['titulo' => 'título', 'categoria' => 'categoría']);
 
         try {
-            $modality = $this->modality === ''
-                ? null
-                : CourseModality::from($this->modality);
+            $course = $this->createCourse->execute(new CreateCourseDraftInput(
+                tutorId: $this->tutorId(),
+                course: new CourseDraftData(
+                    title: trim($this->titulo),
+                    isFree: true,
+                    categoryId: $this->categoria,
+                ),
+            ));
+        } catch (AcademicProfileIncomplete) {
+            $this->addError('titulo', 'Primero completa tu perfil académico (biografía y conocimientos).');
 
-            $seats = $this->totalSeats === ''
-                ? null
-                : (int) $this->totalSeats;
+            return null;
+        } catch (InvalidCourseDraftData) {
+            $this->addError('categoria', 'Selecciona una categoría válida.');
 
-            if ($this->courseId === null) {
-                $this->createCourse->execute(
-                    new CreateCourseDraftInput(
-                        tutorId: $this->tutorId(),
-                        course: new CourseDraftData(
-                            title: $this->title !== '' ? $this->title : null,
-                            description: $this->description !== '' ? $this->description : null,
-                            modality: $modality,
-                            totalSeats: $seats,
-                            isFree: $this->isFree,
-                        ),
-                    )
-                );
-
-                session()->flash('success', 'La tutoría se guardó como borrador.');
-            } else {
-                $this->updateCourse->execute(
-                    new UpdateCourseDraftInput(
-                        tutorId: $this->tutorId(),
-                        courseId: $this->courseId,
-                        course: new CourseDraftPatch(
-                            title: new FieldChange(
-                                $this->title !== '' ? $this->title : null
-                            ),
-                            description: new FieldChange(
-                                $this->description !== '' ? $this->description : null
-                            ),
-                            modality: new FieldChange($modality),
-                            totalSeats: new FieldChange($seats),
-                            isFree: new FieldChange($this->isFree),
-                        ),
-                    )
-                );
-
-                session()->flash('success', 'La tutoría se actualizó correctamente.');
-            }
-
-            $this->resetFormulario();
-        } catch (\Throwable $e) {
-            report($e);
-            $this->addError(
-                'general',
-                'No se pudo guardar la tutoría. Verifica los datos e inténtalo nuevamente.'
-            );
+            return null;
         }
-    }
 
-    public function publicarTutoria(string $id): void
-    {
-        try {
-            $this->publishCourse->execute($id, $this->tutorId());
+        session()->flash('ok', 'Borrador creado. Completa los datos y el temario para publicarlo.');
 
-            session()->flash('success', '¡Tu tutoría fue publicada correctamente!');
-        } catch (\Throwable $e) {
-            report($e);
-            $this->addError(
-                'general',
-                'No se pudo publicar la tutoría. Verifica que siga siendo un borrador.'
-            );
-        }
-    }
-
-    public function cancelarFormulario(): void
-    {
-        $this->resetFormulario();
-    }
-
-    private function resetFormulario(): void
-    {
-        $this->reset([
-            'courseId',
-            'title',
-            'description',
-            'modality',
-            'totalSeats',
-        ]);
-
-        $this->isFree = true;
-        $this->showForm = false;
-        $this->resetValidation();
+        return $this->redirectRoute('tutor.tutoria', ['courseId' => $course->id], navigate: true);
     }
 
     public function render(): View
     {
-        $tutorias = $this->listCourses->execute(
-            new ListTutorCoursesInput($this->tutorId())
-        );
+        $tutorias = $this->listCourses->execute(new ListTutorCoursesInput($this->tutorId()));
+
+        if ($this->filtro !== '') {
+            $tutorias = array_values(array_filter($tutorias, fn ($t) => $t->status->value === $this->filtro));
+        }
 
         return view('livewire.cursos.mis-tutorias', [
             'tutorias' => $tutorias,
+            'categorias' => $this->categorias->list(),
+            'perfilCompleto' => $this->perfilAcademico->get($this->tutorId())->isComplete(),
         ])->layout('layouts.dashboard')->title('Mis tutorías');
     }
 }

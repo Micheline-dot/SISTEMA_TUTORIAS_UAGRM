@@ -25,6 +25,9 @@ use App\Business\Cursos\UseCases\GetTutorCourseDetails;
 use App\Business\Cursos\UseCases\ListTutorCourses;
 use App\Business\Cursos\UseCases\TutorNotEnabled;
 use App\Business\Cursos\UseCases\UpdateCourseDraft;
+use App\Business\Cursos\UseCases\AcademicProfileIncomplete;
+use App\Business\Usuarios\Contracts\AcademicProfileRepository;
+use App\Business\Usuarios\DTO\AcademicProfileData;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -57,6 +60,20 @@ final class CourseDraftUseCasesTest extends TestCase
 
         $this->createUseCase($courses, $transactions, enabled: false)
             ->execute(new CreateCourseDraftInput('tutor-1', new CourseDraftData()));
+    }
+
+    public function test_tutor_without_complete_academic_profile_cannot_create_a_draft(): void
+    {
+        $courses = new FakeCourseRepository();
+        $transactions = new FakeTransactionManager($courses);
+        $this->expectException(AcademicProfileIncomplete::class);
+
+        try {
+            $this->createUseCase($courses, $transactions, profileComplete: false)
+                ->execute(new CreateCourseDraftInput('tutor-1', new CourseDraftData(title: 'Álgebra')));
+        } finally {
+            self::assertSame(0, $transactions->commitCount);
+        }
     }
 
     public function test_invalid_creation_result_rolls_back_and_propagates_exception(): void
@@ -342,12 +359,14 @@ final class CourseDraftUseCasesTest extends TestCase
         FakeCourseRepository $courses,
         FakeTransactionManager $transactions,
         bool $enabled = true,
+        bool $profileComplete = true,
     ): CreateCourseDraft {
         return new CreateCourseDraft(
             new FakeTutorEligibility($enabled),
             $courses,
             new CourseDraftRules(),
             $transactions,
+            new FakeAcademicProfiles($profileComplete),
         );
     }
 
@@ -530,5 +549,27 @@ public function searchPublished(
     public function currentCourse(): ?CourseDetails
     {
         return $this->persistedCourse ?? $this->found;
+    }
+}
+
+final class FakeAcademicProfiles implements AcademicProfileRepository
+{
+    public function __construct(private readonly bool $complete)
+    {
+    }
+
+    public function ensureForTutor(string $tutorId): void
+    {
+    }
+
+    public function findForTutor(string $tutorId): ?AcademicProfileData
+    {
+        return $this->complete
+            ? new AcademicProfileData('Bio', [], ['Álgebra'])
+            : new AcademicProfileData(null, [], []);
+    }
+
+    public function saveForTutor(string $tutorId, AcademicProfileData $profile): void
+    {
     }
 }

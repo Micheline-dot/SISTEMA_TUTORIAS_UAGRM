@@ -29,7 +29,7 @@
 
     if ($esTutor) {
         $secciones[] = ['Área de tutor', [
-            ['tutor.tutorias', 'Mis tutorías', 'tutor.tutorias'],
+            ['tutor.tutorias', 'Mis tutorías', ['tutor.tutorias', 'tutor.tutoria', 'tutor.asistencia']],
             ['tutor.perfil-academico', 'Perfil académico', 'tutor.perfil-academico'],
         ]];
     }
@@ -39,6 +39,7 @@
             ['admin.solicitudes-tutor', 'Solicitudes de tutor', 'admin.solicitudes-tutor*'],
             ['admin.tutorias', 'Gestionar tutorías', 'admin.tutorias'],
             ['admin.usuarios', 'Gestionar usuarios', 'admin.usuarios'],
+            ['admin.categorias', 'Categorías', 'admin.categorias'],
         ]];
     }
 @endphp
@@ -58,7 +59,7 @@
     <div class="{{ $titleClass }}">{{ $titulo }}</div>
 
     @foreach ($items as [$ruta, $etiqueta, $patron])
-        <a class="{{ $itemClass }} {{ request()->routeIs($patron) ? 'active' : '' }}" href="{{ route($ruta) }}">
+        <a class="{{ $itemClass }} {{ request()->routeIs(...(array) $patron) ? 'active' : '' }}" href="{{ route($ruta) }}">
             {{ $etiqueta }}
         </a>
     @endforeach

@@ -27,15 +27,20 @@ final class EloquentCourseRepository implements CourseRepository
             'modalidad' => $data->modality?->value,
             'cupos' => $data->totalSeats,
             'es_gratuito' => $data->isFree,
+            'id_categoria' => $data->categoryId === null ? null : (int) $data->categoryId,
+            'fecha_inicio' => $data->startDate,
+            'fecha_finalizacion' => $data->endDate,
             'estado' => CourseStatus::BORRADOR->value,
         ]);
 
-        return $this->toDetails($course);
+        return $this->toDetails($course->fresh());
     }
 
     public function listByOwner(string $ownerTutorId): array
     {
         $courses = Course::query()
+            ->with('categoria')
+            ->withCount(['inscripcionesActivas as inscritos_activos'])
             ->where(
                 'id_tutor',
                 PostgreSqlIntegerId::toInteger($ownerTutorId)
@@ -50,9 +55,10 @@ final class EloquentCourseRepository implements CourseRepository
 
     public function findById(string $courseId): ?CourseDetails
     {
-        $course = Course::query()->find(
-            PostgreSqlIntegerId::toInteger($courseId)
-        );
+        $course = Course::query()
+            ->with('categoria')
+            ->withCount(['inscripcionesActivas as inscritos_activos'])
+            ->find(PostgreSqlIntegerId::toInteger($courseId));
 
         return $course === null ? null : $this->toDetails($course);
     }
@@ -84,6 +90,18 @@ final class EloquentCourseRepository implements CourseRepository
 
         if ($patch->totalSeats !== null) {
             $changes['cupos'] = $patch->totalSeats->value;
+        }
+
+        if ($patch->categoryId !== null) {
+            $changes['id_categoria'] = $patch->categoryId->value === null ? null : (int) $patch->categoryId->value;
+        }
+
+        if ($patch->startDate !== null) {
+            $changes['fecha_inicio'] = $patch->startDate->value;
+        }
+
+        if ($patch->endDate !== null) {
+            $changes['fecha_finalizacion'] = $patch->endDate->value;
         }
 
         if ($patch->isFree !== null) {
@@ -199,6 +217,12 @@ final class EloquentCourseRepository implements CourseRepository
                 : CourseModality::from($course->modalidad),
             totalSeats: $course->cupos,
             isFree: $course->es_gratuito,
+            categoryId: $course->id_categoria === null ? null : (string) $course->id_categoria,
+            categoryName: $course->categoria?->nombre,
+            startDate: $course->fecha_inicio?->toDateString(),
+            endDate: $course->fecha_finalizacion?->toDateString(),
+            cancellationReason: $course->motivo_cancelacion,
+            activeEnrollments: (int) ($course->inscritos_activos ?? $course->inscripcionesActivas()->count()),
         );
     }
 
@@ -212,6 +236,11 @@ final class EloquentCourseRepository implements CourseRepository
             modality: $course->modalidad === null
                 ? null
                 : CourseModality::from($course->modalidad),
+            categoryName: $course->categoria?->nombre,
+            startDate: $course->fecha_inicio?->toDateString(),
+            endDate: $course->fecha_finalizacion?->toDateString(),
+            totalSeats: $course->cupos,
+            activeEnrollments: (int) ($course->inscritos_activos ?? 0),
         );
     }
 }
