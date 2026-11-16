@@ -29,9 +29,7 @@ final class GestionarSolicitudesHabilitacion extends Component
     {
         abort_unless(
             Auth::check()
-            && Auth::user()->roles()
-                ->where('nombre', 'ADMINISTRADOR')
-                ->exists(),
+            && Auth::user()->tieneRol('ADMINISTRADOR'),
             403,
             'No tienes autorización para acceder a esta sección.'
         );
@@ -133,6 +131,6 @@ final class GestionarSolicitudesHabilitacion extends Component
             [
                 'solicitudes' => $solicitudes,
             ]
-        )->layout('layouts.auth');
+        )->layout('layouts.admin')->title('Solicitudes de tutor');
     }
 }

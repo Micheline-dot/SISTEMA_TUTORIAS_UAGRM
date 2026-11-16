@@ -123,4 +123,24 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Administrador inicial
+    |--------------------------------------------------------------------------
+    |
+    | Datos que usa InitialAdminSeeder para crear el primer administrador
+    | cuando todavía no existe ninguno. Se definen solo en el .env del
+    | servidor; después de crearlo conviene borrar ADMIN_PASSWORD.
+    |
+    */
+
+    'initial_admin' => [
+        'first_names' => env('ADMIN_NOMBRES'),
+        'last_names' => env('ADMIN_APELLIDOS'),
+        'email' => env('ADMIN_EMAIL'),
+        'password' => env('ADMIN_PASSWORD'),
+        'phone' => env('ADMIN_TELEFONO'),
+        'position' => env('ADMIN_CARGO'),
+    ],
+
 ];

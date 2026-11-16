@@ -25,7 +25,7 @@ final class MisInscripciones extends Component
 
     public function mount(): void
     {
-        $roles = auth()->user()->roles->pluck('nombre')->all();
+        $roles = auth()->user()->nombresRoles();
 
         abort_unless(in_array('ESTUDIANTE', $roles, true), 403);
     }
@@ -69,6 +69,6 @@ final class MisInscripciones extends Component
             'inscripciones' => $this->listEnrollments->execute(
                 $this->studentId()
             ),
-        ])->layout('layouts.student');
+        ])->layout('layouts.student')->title('Mis inscripciones');
     }
 }

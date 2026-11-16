@@ -146,7 +146,7 @@ final class EloquentCourseRepository implements CourseRepository
         CourseCatalogFilters $filters,
     ): array {
         $query = Course::query()
-            ->with('tutor:id_usuario,nombre_completo')
+            ->with('tutor:id_usuario,nombres,apellidos')
             ->where('estado', CourseStatus::PUBLICADO->value);
 
         if ($filters->search !== null && trim($filters->search) !== '') {

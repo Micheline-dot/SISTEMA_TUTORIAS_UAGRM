@@ -16,10 +16,7 @@ final class DocumentoSolicitudHabilitacionController
     ): Response {
         abort_unless(auth()->check(), 401);
 
-        $esAdministrador = auth()->user()
-            ->roles()
-            ->where('nombre', 'ADMINISTRADOR')
-            ->exists();
+        $esAdministrador = auth()->user()->tieneRol('ADMINISTRADOR');
 
         abort_unless($esAdministrador, 403);
 

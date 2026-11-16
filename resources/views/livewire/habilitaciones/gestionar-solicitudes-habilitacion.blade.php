@@ -79,6 +79,27 @@
                         </p>
                     @endif
 
+                    @if (!empty($solicitud['registro_universitario']))
+                        <p>
+                            <strong>Registro universitario:</strong>
+                            {{ $solicitud['registro_universitario'] }}
+                        </p>
+                    @endif
+
+                    @if (!empty($solicitud['facultad_solicitante']))
+                        <p>
+                            <strong>Facultad:</strong>
+                            {{ $solicitud['facultad_solicitante'] }}
+                        </p>
+                    @endif
+
+                    @if (!empty($solicitud['correo_solicitante']))
+                        <p>
+                            <strong>Correo:</strong>
+                            {{ $solicitud['correo_solicitante'] }}
+                        </p>
+                    @endif
+
                     <h3 style="font-weight: bold; margin-top: 18px; margin-bottom: 8px;">
                         Documentación presentada
                     </h3>

@@ -3,21 +3,26 @@
 namespace App\Business\Usuarios\UseCases;
 
 use App\Business\Shared\Contracts\TransactionManager;
-use App\Business\Usuarios\Contracts\AcademicProfileRepository;
-use App\Business\Usuarios\Contracts\FacultyRepository;
 use App\Business\Usuarios\Contracts\PasswordHasher;
 use App\Business\Usuarios\Contracts\RoleAssignmentRepository;
 use App\Business\Usuarios\Contracts\UserRepository;
 use App\Business\Usuarios\DTO\RegisterUserInput;
 
+/**
+ * CU01 Registro público: crea el Usuario (tipo_registro ESTUDIANTE) y su
+ * especialización Estudiante sin registro universitario, que se completa
+ * luego en "Mi perfil". Solo se aceptan correos @gmail.com.
+ */
 final class RegisterUser
 {
-    private const INITIAL_ROLE = 'ESTUDIANTE';
+    private const REGISTRATION_TYPE = 'ESTUDIANTE';
+
+    public const ALLOWED_EMAIL_DOMAIN = 'gmail.com';
+
+    public const MIN_PASSWORD_LENGTH = 8;
 
     public function __construct(
         private readonly UserRepository $users,
-        private readonly AcademicProfileRepository $profiles,
-        private readonly FacultyRepository $faculties,
         private readonly RoleAssignmentRepository $roles,
         private readonly PasswordHasher $passwords,
         private readonly TransactionManager $transactions,
@@ -26,43 +31,59 @@ final class RegisterUser
 
     public function execute(RegisterUserInput $input): string
     {
-        $this->assertValid($input);
+        $email = self::normalizeEmail($input->email);
+
+        $this->assertValid($input, $email);
+
         $passwordHash = $this->passwords->hash($input->plainTextPassword);
 
-        return $this->transactions->run(function () use ($input, $passwordHash): string {
-            if (! $this->faculties->exists($input->facultyId)) {
-                throw new FacultyNotFound('The selected faculty is not in the validated catalog.');
-            }
-
+        return $this->transactions->run(function () use ($input, $email, $passwordHash): string {
             $userId = $this->users->create(
-                $input->fullName,
-                $input->email,
+                trim($input->firstNames),
+                trim($input->lastNames),
+                $email,
                 $passwordHash,
-                $input->phone,
+                null,
+                null,
+                self::REGISTRATION_TYPE,
                 true,
             );
 
-            $this->profiles->create($userId, $input->facultyId);
-            $this->roles->assign($userId, self::INITIAL_ROLE);
+            $this->roles->assignStudent($userId, null);
 
             return $userId;
         });
     }
 
-    private function assertValid(RegisterUserInput $input): void
+    public static function normalizeEmail(string $email): string
     {
-        foreach (['fullName', 'email', 'plainTextPassword', 'facultyId', 'phone'] as $field) {
+        return mb_strtolower(trim($email));
+    }
+
+    public static function isAllowedEmail(string $email): bool
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false
+            && str_ends_with($email, '@'.self::ALLOWED_EMAIL_DOMAIN);
+    }
+
+    private function assertValid(RegisterUserInput $input, string $email): void
+    {
+        foreach (['firstNames', 'lastNames', 'email', 'plainTextPassword'] as $field) {
             if (trim($input->{$field}) === '') {
                 throw new InvalidRegistrationData("The {$field} field is required.");
             }
         }
 
-        if (filter_var($input->email, FILTER_VALIDATE_EMAIL) === false) {
-            throw new InvalidRegistrationData('The email address is invalid.');
+        if (mb_strlen(trim($input->firstNames)) > 100 || mb_strlen(trim($input->lastNames)) > 100) {
+            throw new InvalidRegistrationData('Names cannot exceed 100 characters.');
         }
 
-        if (! ctype_digit($input->facultyId) || (int) $input->facultyId < 1) {
-            throw new InvalidRegistrationData('The selected faculty is invalid.');
+        if (! self::isAllowedEmail($email) || mb_strlen($email) > 150) {
+            throw new InvalidRegistrationData('Only @gmail.com email addresses are accepted.');
+        }
+
+        if (mb_strlen($input->plainTextPassword) < self::MIN_PASSWORD_LENGTH) {
+            throw new InvalidRegistrationData('The password must be at least 8 characters.');
         }
     }
 }

@@ -178,7 +178,7 @@
 
     @php
         $user = auth()->user();
-        $roles = $user->roles->pluck('nombre')->all();
+        $roles = $user->nombresRoles();
 
         $esEstudiante = in_array('ESTUDIANTE', $roles);
         $esTutor = in_array('TUTOR', $roles);
@@ -189,40 +189,7 @@
 
         <div class="brand">TUTORÍAS <span>UAGRM</span></div>
 
-        <div class="nav-title">Menú principal</div>
-
-        <a class="nav-item active" href="{{ route('home') }}">
-            ⌂ &nbsp; Inicio
-        </a>
-
-        <div class="nav-title">Mi cuenta</div>
-
-        @if ($esEstudiante && !$esAdministrador)
-            <div class="nav-title">Área de estudiante</div>
-
-            <a class="nav-item" href="{{ route('habilitacion.solicitar') }}">
-                ✦ &nbsp; Solicitar ser tutor
-            </a>
-        @endif
-
-        @if ($esTutor)
-            <div class="nav-title">Área de tutor</div>
-
-            <a class="nav-item" href="{{ route('tutor.tutorias') }}">
-                ▣ &nbsp; Mis tutorías
-            </a>
-        @endif
-
-        @if ($esAdministrador)
-            <div class="nav-title">Administración</div>
-
-            <a class="nav-item" href="{{ route('admin.tutorias') }}">
-                Gestionar tutorías
-            </a>
-            <a class="nav-item" href="{{ route('admin.solicitudes-tutor') }}">
-                ▤ &nbsp; Gestionar solicitudes
-            </a>
-        @endif
+        <x-menu-rol />
 
         <form class="logout" method="POST" action="{{ route('logout') }}">
             @csrf
@@ -280,13 +247,13 @@
 
             @endif
 
-            <article class="card">
+            <a class="card card-link" href="{{ route('perfil') }}">
                 <div class="icon">♙</div>
                 <h3>Mi perfil</h3>
-                <p>Consulta tu información y datos académicos registrados.</p>
-            </article>
+                <p>Actualiza tu foto, teléfono y nombre, y registra tus datos académicos.</p>
+            </a>
 
-            @if ($esEstudiante && !$esAdministrador)
+            @if ($esEstudiante && !$esTutor && !$esAdministrador)
 
                 <a class="card card-link" href="{{ route('habilitacion.solicitar') }}">
                     <div class="icon">✚</div>

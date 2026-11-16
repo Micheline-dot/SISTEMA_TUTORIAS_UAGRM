@@ -10,14 +10,10 @@ final class EloquentStudentEligibility implements StudentEligibility
 {
     public function isEnabledStudent(string $studentId): bool
     {
-        $id = PostgreSqlIntegerId::toInteger($studentId);
-
         return User::query()
-            ->where('id_usuario', $id)
+            ->where('id_usuario', PostgreSqlIntegerId::toInteger($studentId))
             ->where('activo', true)
-            ->whereHas('roles', function ($query): void {
-                $query->where('nombre', 'ESTUDIANTE');
-            })
+            ->whereHas('estudiante')
             ->exists();
     }
 }

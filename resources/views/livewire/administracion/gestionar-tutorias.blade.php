@@ -572,7 +572,7 @@
                             <th>Inscripción</th>
                             <th>Asistencia</th>
                             <th>Fecha de inscripción</th>
-                            <th>Fecha de cancelación</th>
+                            <th>Motivo de cancelación</th>
                         </tr>
                     </thead>
 
@@ -601,14 +601,12 @@
 
                                 <td>
                                     {{ !empty($inscrito['fecha_inscripcion'])
-                                        ? \Carbon\Carbon::parse($inscrito['fecha_inscripcion'])->format('d/m/Y H:i')
+                                        ? \Carbon\Carbon::parse($inscrito['fecha_inscripcion'])->format('d/m/Y')
                                         : 'Sin fecha' }}
                                 </td>
 
                                 <td>
-                                    {{ !empty($inscrito['fecha_cancelacion'])
-                                        ? \Carbon\Carbon::parse($inscrito['fecha_cancelacion'])->format('d/m/Y H:i')
-                                        : '—' }}
+                                    {{ $inscrito['motivo_cancelacion'] ?? '—' }}
                                 </td>
                             </tr>
 

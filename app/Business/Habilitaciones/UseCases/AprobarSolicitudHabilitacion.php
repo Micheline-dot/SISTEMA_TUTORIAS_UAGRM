@@ -4,14 +4,21 @@ namespace App\Business\Habilitaciones\UseCases;
 
 use App\Business\Habilitaciones\Contracts\SolicitudHabilitacionRepository;
 use App\Business\Shared\Contracts\TransactionManager;
+use App\Business\Usuarios\Contracts\AcademicProfileRepository;
 use App\Business\Usuarios\Contracts\RoleAssignmentRepository;
 use DomainException;
 
+/**
+ * Aprueba la solicitud: el usuario pasa a ser también Tutor (conserva su
+ * rol de Estudiante) con el tipo académico declarado, y se le crea su
+ * PerfilAcademico vacío para completarlo después.
+ */
 final class AprobarSolicitudHabilitacion
 {
     public function __construct(
         private SolicitudHabilitacionRepository $solicitudes,
         private RoleAssignmentRepository $roles,
+        private AcademicProfileRepository $perfiles,
         private TransactionManager $transactions,
     ) {
     }
@@ -55,10 +62,10 @@ final class AprobarSolicitudHabilitacion
                 );
             }
 
-            $this->roles->assign(
-                (string) $solicitud['id_usuario'],
-                'TUTOR'
-            );
+            $idUsuario = (string) $solicitud['id_usuario'];
+
+            $this->roles->assignTutor($idUsuario, (string) $solicitud['tipo_personal']);
+            $this->perfiles->ensureForTutor($idUsuario);
         });
     }
 }

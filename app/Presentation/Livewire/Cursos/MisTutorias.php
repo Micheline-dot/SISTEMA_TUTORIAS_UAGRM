@@ -54,7 +54,7 @@ final class MisTutorias extends Component
 
     public function mount(): void
     {
-        $roles = auth()->user()->roles->pluck('nombre')->all();
+        $roles = auth()->user()->nombresRoles();
 
         abort_unless(in_array('TUTOR', $roles, true), 403);
     }
@@ -211,6 +211,6 @@ final class MisTutorias extends Component
 
         return view('livewire.cursos.mis-tutorias', [
             'tutorias' => $tutorias,
-        ])->layout('layouts.dashboard');
+        ])->layout('layouts.dashboard')->title('Mis tutorías');
     }
 }

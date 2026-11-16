@@ -33,7 +33,7 @@ final class CatalogoTutorias extends Component
 
     public function mount(): void
     {
-        $roles = auth()->user()->roles->pluck('nombre')->all();
+        $roles = auth()->user()->nombresRoles();
 
         abort_unless(in_array('ESTUDIANTE', $roles, true), 403);
     }
@@ -96,6 +96,6 @@ final class CatalogoTutorias extends Component
 
         return view('livewire.cursos.catalogo-tutorias', [
             'tutorias' => $this->searchCourses->execute($filters),
-        ])->layout('layouts.student');
+        ])->layout('layouts.student')->title('Buscar tutorías');
     }
 }

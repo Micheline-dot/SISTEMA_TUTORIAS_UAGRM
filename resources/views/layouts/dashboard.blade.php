@@ -104,11 +104,7 @@
     <aside class="sidebar">
         <div class="brand">TUTORÍAS <span>UAGRM</span></div>
 
-        <div class="nav-title">Menú principal</div>
-        <a class="nav-item" href="{{ route('home') }}">⌂ &nbsp; Inicio</a>
-
-        <div class="nav-title">Área de tutor</div>
-        <a class="nav-item active" href="{{ route('tutor.tutorias') }}">▣ &nbsp; Mis tutorías</a>
+        <x-menu-rol />
 
         <form class="logout" method="POST" action="{{ route('logout') }}">
             @csrf
@@ -118,7 +114,7 @@
 
     <main class="main">
         <header class="topbar">
-            <h1>Mis tutorías</h1>
+            <h1>{{ $title ?? 'Área de tutor' }}</h1>
             <div class="user">
                 Sesión de: <strong>{{ auth()->user()->nombre_completo }}</strong>
             </div>

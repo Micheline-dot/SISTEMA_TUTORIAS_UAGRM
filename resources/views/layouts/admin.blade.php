@@ -140,23 +140,7 @@
             TUTORÍAS <span>UAGRM</span>
         </div>
 
-        <div class="admin-nav-title">Menú principal</div>
-
-        <a class="admin-nav-item" href="{{ route('home') }}">
-            Inicio
-        </a>
-
-        <div class="admin-nav-title">Administración</div>
-
-        <a class="admin-nav-item"
-           href="{{ route('admin.solicitudes-tutor') }}">
-            Gestionar solicitudes
-        </a>
-
-        <a class="admin-nav-item active"
-           href="{{ route('admin.tutorias') }}">
-            Gestionar tutorías
-        </a>
+        <x-menu-rol item-class="admin-nav-item" title-class="admin-nav-title" />
 
         <form class="admin-logout"
               method="POST"
@@ -170,7 +154,7 @@
     <main class="admin-main">
 
         <header class="admin-topbar">
-            <h1>Administración de tutorías</h1>
+            <h1>{{ $title ?? 'Administración' }}</h1>
 
             <div class="admin-user">
                 Sesión de:

@@ -4,5 +4,6 @@ namespace App\Business\Usuarios\Contracts;
 
 interface AcademicProfileRepository
 {
-    public function create(string $userId, string $facultyId): void;
+    /** Creates the tutor's (empty) academic profile if it does not exist yet. */
+    public function ensureForTutor(string $tutorId): void;
 }

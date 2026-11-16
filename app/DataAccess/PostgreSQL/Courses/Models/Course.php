@@ -2,13 +2,14 @@
 
 namespace App\DataAccess\PostgreSQL\Courses\Models;
 
+use App\DataAccess\PostgreSQL\Users\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\DataAccess\PostgreSQL\Users\Models\User;
 
+/** Tabla "curso". */
 final class Course extends Model
 {
-    protected $table = 'cursos';
+    protected $table = 'curso';
 
     protected $primaryKey = 'id_curso';
 
@@ -25,9 +26,12 @@ final class Course extends Model
         'modalidad',
         'cupos',
         'es_gratuito',
+        'id_categoria',
         'fecha_inicio',
         'fecha_finalizacion',
         'estado',
+        'motivo_cancelacion',
+        'fecha_cancelacion',
     ];
 
     protected function casts(): array
@@ -37,15 +41,13 @@ final class Course extends Model
             'es_gratuito' => 'boolean',
             'fecha_inicio' => 'date',
             'fecha_finalizacion' => 'date',
+            'fecha_cancelacion' => 'datetime',
         ];
     }
 
+    /** Usuario del tutor propietario (curso.id_tutor → tutor.id_usuario → usuario). */
     public function tutor(): BelongsTo
     {
-        return $this->belongsTo(
-            User::class,
-            'id_tutor',
-            'id_usuario'
-        );
+        return $this->belongsTo(User::class, 'id_tutor', 'id_usuario');
     }
 }

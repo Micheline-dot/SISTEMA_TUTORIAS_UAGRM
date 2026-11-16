@@ -73,12 +73,7 @@
 <body>
     <aside class="sidebar">
         <div class="brand">TUTORÍAS <span>UAGRM</span></div>
-        <div class="nav-title">Menú principal</div>
-        <a class="nav-item" href="{{ route('home') }}">⌂ &nbsp; Inicio</a>
-        <a class="nav-item active" href="{{ route('estudiante.catalogo') }}">Buscar tutorías</a>
-        <a class="nav-item" href="{{ route('estudiante.inscripciones') }}">Mis inscripciones</a>
-        <div class="nav-title">Mi cuenta</div>
-        <a class="nav-item" href="{{ route('habilitacion.solicitar') }}">✦ &nbsp; Quiero ser tutor</a>
+        <x-menu-rol />
         <form class="logout" method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit">Cerrar sesión</button>
@@ -87,7 +82,7 @@
 
     <main class="main">
         <header class="topbar">
-            <h1>Buscar tutorías</h1>
+            <h1>{{ $title ?? 'Área de estudiante' }}</h1>
             <div class="user">
                 Sesión de: <strong>{{ auth()->user()->nombre_completo }}</strong>
             </div>

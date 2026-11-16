@@ -3,45 +3,31 @@
 
     <h1>Registrar perfil</h1>
 
-    <p>Crea tu cuenta para utilizar el Sistema de Apoyo Académico UAGRM.</p>
-
-    @if (count($this->faculties) === 0)
-        <div class="empty">
-            El catálogo oficial de facultades aún no está cargado.
-            El registro estará disponible cuando se cargue.
-        </div>
-    @endif
+    <p>Crea tu cuenta para utilizar el Sistema de Apoyo Académico UAGRM.
+       Tu teléfono, facultad y registro universitario los completarás después en <strong>Mi perfil</strong>.</p>
 
     <form wire:submit="register">
 
-        <label for="fullName">Nombre completo</label>
-        <input id="fullName" type="text" wire:model="fullName" autocomplete="name" required>
-        @error('fullName') <div class="error">{{ $message }}</div> @enderror
+        <label for="firstNames">Nombres</label>
+        <input id="firstNames" type="text" wire:model="firstNames" autocomplete="given-name" maxlength="100" required>
+        @error('firstNames') <div class="error">{{ $message }}</div> @enderror
 
-        <label for="email">Correo electrónico</label>
-        <input id="email" type="email" wire:model="email" autocomplete="email" required>
+        <label for="lastNames">Apellidos</label>
+        <input id="lastNames" type="text" wire:model="lastNames" autocomplete="family-name" maxlength="100" required>
+        @error('lastNames') <div class="error">{{ $message }}</div> @enderror
+
+        <label for="email">Correo electrónico (Gmail)</label>
+        <input id="email" type="email" wire:model="email" autocomplete="email" placeholder="usuario@gmail.com" maxlength="150" required>
         @error('email') <div class="error">{{ $message }}</div> @enderror
 
         <label for="password">Contraseña</label>
-        <input id="password" type="password" wire:model="password" autocomplete="new-password" required>
+        <input id="password" type="password" wire:model="password" autocomplete="new-password" minlength="8" required>
         @error('password') <div class="error">{{ $message }}</div> @enderror
 
-        <label for="facultyId">Facultad</label>
-        <select id="facultyId" wire:model="facultyId" required>
-            <option value="">Selecciona una facultad</option>
-            @foreach ($this->faculties as $faculty)
-                <option value="{{ $faculty['id'] }}">{{ $faculty['name'] }}</option>
-            @endforeach
-        </select>
-        @error('facultyId') <div class="error">{{ $message }}</div> @enderror
+        <label for="password_confirmation">Confirmar contraseña</label>
+        <input id="password_confirmation" type="password" wire:model="password_confirmation" autocomplete="new-password" minlength="8" required>
 
-        <label for="phone">Teléfono</label>
-        <input id="phone" type="tel" wire:model="phone" autocomplete="tel" required>
-        @error('phone') <div class="error">{{ $message }}</div> @enderror
-
-        <button type="submit" @disabled(count($this->faculties) === 0)>
-            Crear perfil
-        </button>
+        <button type="submit">Crear perfil</button>
 
     </form>
 

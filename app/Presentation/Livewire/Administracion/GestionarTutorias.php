@@ -51,9 +51,7 @@ final class GestionarTutorias extends Component
     {
         abort_unless(
             Auth::check()
-                && Auth::user()->roles()
-                    ->where('nombre', 'ADMINISTRADOR')
-                    ->exists(),
+                && Auth::user()->tieneRol('ADMINISTRADOR'),
             403,
             'No tienes autorización para acceder a esta sección.'
         );
@@ -188,6 +186,6 @@ final class GestionarTutorias extends Component
             [
                 'tutorias' => $tutorias,
             ]
-        )->layout('layouts.admin');
+        )->layout('layouts.admin')->title('Gestionar tutorías');
     }
 }

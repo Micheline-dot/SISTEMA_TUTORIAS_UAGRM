@@ -1,89 +1,72 @@
-
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-use App\Presentation\Http\Controllers\LogoutController;
 use App\Presentation\Http\Controllers\DocumentoSolicitudHabilitacionController;
-
+use App\Presentation\Http\Controllers\FotoPerfilController;
+use App\Presentation\Http\Controllers\LogoutController;
+use App\Presentation\Livewire\Usuarios\MiPerfil;
+use App\Presentation\Livewire\Administracion\GestionarTutorias;
 use App\Presentation\Livewire\Auth\Login;
 use App\Presentation\Livewire\Auth\Register;
-
-use App\Presentation\Livewire\Habilitaciones\SolicitarHabilitacion;
-use App\Presentation\Livewire\Habilitaciones\GestionarSolicitudesHabilitacion;
-use App\Presentation\Livewire\Cursos\MisTutorias;
 use App\Presentation\Livewire\Cursos\CatalogoTutorias;
-use App\Presentation\Livewire\Inscripciones\MisInscripciones;
+use App\Presentation\Livewire\Cursos\MisTutorias;
+use App\Presentation\Livewire\Habilitaciones\GestionarSolicitudesHabilitacion;
+use App\Presentation\Livewire\Habilitaciones\SolicitarHabilitacion;
 use App\Presentation\Livewire\Inscripciones\GestionarAsistencia;
-use App\Presentation\Livewire\Administracion\GestionarTutorias;
+use App\Presentation\Livewire\Inscripciones\MisInscripciones;
+use Illuminate\Support\Facades\Route;
 
-// PÃ¡gina principal
+// Página principal
 Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('home')
         : redirect()->route('login');
 });
 
-// Rutas para usuarios que NO iniciaron sesiÃ³n
+// Invitados (sin sesión) — CU01
 Route::middleware('guest')->group(function () {
-
-    Route::get('/registro', Register::class)
-        ->name('register');
-
-    Route::get('/login', Login::class)
-        ->name('login');
-
+    Route::get('/registro', Register::class)->name('register');
+    Route::get('/login', Login::class)->name('login');
 });
 
-// Rutas para usuarios que SÃ iniciaron sesiÃ³n
+// Usuarios autenticados
 Route::middleware('auth')->group(function () {
 
-    // Panel principal
-    Route::get('/inicio', function () {
-        return view('auth.home');
-    })->name('home');
+    Route::get('/inicio', fn () => view('auth.home'))->name('home');
+    Route::post('/logout', LogoutController::class)->name('logout');
 
-    // Solicitar habilitaciÃ³n como tutor
-    Route::get(
-        '/solicitar-habilitacion',
-        SolicitarHabilitacion::class
-    )->name('habilitacion.solicitar');
+    // Mi perfil — CU02 (todos los roles)
+    Route::get('/mi-perfil', MiPerfil::class)->name('perfil');
+    Route::get('/usuarios/{userId}/foto', FotoPerfilController::class)
+        ->whereNumber('userId')
+        ->name('perfil.foto');
 
-    // Gestionar solicitudes de tutor
-    Route::get(
-        '/administracion/solicitudes-tutor',
-        GestionarSolicitudesHabilitacion::class
-    )->name('admin.solicitudes-tutor');
+    // Área de estudiante — CU03, CU11–CU14
+    Route::middleware('rol:ESTUDIANTE')->group(function () {
+        Route::get('/solicitar-habilitacion', SolicitarHabilitacion::class)
+            ->name('habilitacion.solicitar');
+        Route::get('/estudiante/buscar-tutorias', CatalogoTutorias::class)
+            ->name('estudiante.catalogo');
+        Route::get('/estudiante/mis-inscripciones', MisInscripciones::class)
+            ->name('estudiante.inscripciones');
+    });
 
-    // Visualizar documentos PDF de las solicitudes
-    Route::get(
-        '/administracion/solicitudes-tutor/{idSolicitud}/documentos/{tipoDocumento}',
-        DocumentoSolicitudHabilitacionController::class
-    )->whereNumber('idSolicitud')
-     ->name('admin.solicitudes-tutor.documento');
+    // Área de tutor — CU07–CU10, CU15
+    Route::middleware('rol:TUTOR')->group(function () {
+        Route::get('/tutor/mis-tutorias', MisTutorias::class)
+            ->name('tutor.tutorias');
+        Route::get('/tutor/tutorias/{courseId}/asistencia', GestionarAsistencia::class)
+            ->whereNumber('courseId')
+            ->name('tutor.asistencia');
+    });
 
-    // Gestionar tutorÃ­as propias
-    Route::get('/tutor/mis-tutorias', MisTutorias::class)
-        ->name('tutor.tutorias');
-    // Cerrar sesiÃ³n
-    Route::get('/estudiante/buscar-tutorias', CatalogoTutorias::class)
-        ->name('estudiante.catalogo');
-    Route::get('/estudiante/mis-inscripciones', MisInscripciones::class)
-        ->name('estudiante.inscripciones');
-
-
-    // Gestionar asistencia de estudiantes inscritos
-    Route::get(
-        '/tutor/tutorias/{courseId}/asistencia',
-        GestionarAsistencia::class
-    )->whereNumber('courseId')
-     ->name('tutor.asistencia');
-    // Administración general de tutorías
-    Route::get(
-        '/administracion/tutorias',
-        GestionarTutorias::class
-    )->name('admin.tutorias');
-    Route::post('/logout', LogoutController::class)
-        ->name('logout');
-
+    // Administración — CU04, CU05, CU10 (cancelación)
+    Route::middleware('rol:ADMINISTRADOR')->prefix('administracion')->group(function () {
+        Route::get('/solicitudes-tutor', GestionarSolicitudesHabilitacion::class)
+            ->name('admin.solicitudes-tutor');
+        Route::get('/solicitudes-tutor/{idSolicitud}/documentos/{tipoDocumento}', DocumentoSolicitudHabilitacionController::class)
+            ->whereNumber('idSolicitud')
+            ->name('admin.solicitudes-tutor.documento');
+        Route::get('/tutorias', GestionarTutorias::class)
+            ->name('admin.tutorias');
+    });
 });

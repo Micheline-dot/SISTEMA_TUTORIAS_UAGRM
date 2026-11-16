@@ -74,6 +74,6 @@ final class GestionarAsistencia extends Component
     public function render(): View
     {
         return view('livewire.inscripciones.gestionar-asistencia')
-            ->layout('layouts.dashboard');
+            ->layout('layouts.dashboard')->title('Asistencia de estudiantes');
     }
 }

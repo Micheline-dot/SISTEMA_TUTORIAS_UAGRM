@@ -4,12 +4,15 @@ namespace App\Business\Usuarios\Contracts;
 
 interface UserRepository
 {
-    /** Persist an account and return its generated identifier as a string. */
+    /** Persist an account (tabla usuario) and return its generated identifier as a string. */
     public function create(
-        string $fullName,
+        string $firstNames,
+        string $lastNames,
         string $email,
         string $passwordHash,
-        string $phone,
+        ?string $phone,
+        ?string $faculty,
+        string $registrationType,
         bool $active,
     ): string;
 }
