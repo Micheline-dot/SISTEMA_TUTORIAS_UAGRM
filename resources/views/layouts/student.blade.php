@@ -57,7 +57,7 @@
             margin-bottom: 30px;
         }
         .topbar h1 { font-size: 25px; margin: 0; }
-        .user { color: #65738a; font-size: 14px; }
+        .user { color: #65738a; font-size: 14px; display: flex; align-items: center; gap: 14px; }
         @media(max-width: 850px) {
             .sidebar { width: 190px; }
             .main { margin-left: 190px; padding: 25px; }
@@ -84,7 +84,8 @@
         <header class="topbar">
             <h1>{{ $title ?? 'Área de estudiante' }}</h1>
             <div class="user">
-                Sesión de: <strong>{{ auth()->user()->nombre_completo }}</strong>
+                <livewire:notificaciones.contador />
+                <span>Sesión de: <strong>{{ auth()->user()->nombre_completo }}</strong></span>
             </div>
         </header>
         {{ $slot }}

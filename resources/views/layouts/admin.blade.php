@@ -156,9 +156,9 @@
         <header class="admin-topbar">
             <h1>{{ $title ?? 'Administración' }}</h1>
 
-            <div class="admin-user">
-                Sesión de:
-                <strong>{{ $user->nombre_completo }}</strong>
+            <div class="admin-user" style="display: flex; align-items: center; gap: 14px;">
+                <livewire:notificaciones.contador />
+                <span>Sesión de: <strong>{{ $user->nombre_completo }}</strong></span>
             </div>
         </header>
 

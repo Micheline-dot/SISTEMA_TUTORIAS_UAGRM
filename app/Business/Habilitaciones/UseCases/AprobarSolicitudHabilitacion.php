@@ -6,6 +6,7 @@ use App\Business\Habilitaciones\Contracts\SolicitudHabilitacionRepository;
 use App\Business\Shared\Contracts\TransactionManager;
 use App\Business\Usuarios\Contracts\AcademicProfileRepository;
 use App\Business\Usuarios\Contracts\RoleAssignmentRepository;
+use App\Business\Notificaciones\UseCases\EnviarNotificacion;
 use DomainException;
 
 /**
@@ -20,6 +21,7 @@ final class AprobarSolicitudHabilitacion
         private RoleAssignmentRepository $roles,
         private AcademicProfileRepository $perfiles,
         private TransactionManager $transactions,
+        private EnviarNotificacion $notificar,
     ) {
     }
 
@@ -66,6 +68,14 @@ final class AprobarSolicitudHabilitacion
 
             $this->roles->assignTutor($idUsuario, (string) $solicitud['tipo_personal']);
             $this->perfiles->ensureForTutor($idUsuario);
+
+            // CU05 → CU19: avisar al solicitante.
+            $this->notificar->aUsuario(
+                $idUsuario,
+                'Solicitud de tutor aprobada',
+                '¡Felicidades! Tu solicitud de habilitación como tutor fue aprobada. Completa tu perfil académico y crea tu primera tutoría.',
+                '/tutor/perfil-academico',
+            );
         });
     }
 }

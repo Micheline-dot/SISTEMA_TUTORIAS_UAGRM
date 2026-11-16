@@ -4,6 +4,7 @@ namespace App\Business\Habilitaciones\UseCases;
 
 use App\Business\Habilitaciones\Contracts\SolicitudHabilitacionRepository;
 use App\Business\Shared\Contracts\TransactionManager;
+use App\Business\Notificaciones\UseCases\EnviarNotificacion;
 use DomainException;
 
 final class RechazarSolicitudHabilitacion
@@ -11,6 +12,7 @@ final class RechazarSolicitudHabilitacion
     public function __construct(
         private SolicitudHabilitacionRepository $solicitudes,
         private TransactionManager $transactions,
+        private EnviarNotificacion $notificar,
     ) {
     }
 
@@ -66,6 +68,14 @@ final class RechazarSolicitudHabilitacion
                     'No fue posible rechazar la solicitud.'
                 );
             }
+
+            // CU05 → CU19: avisar al solicitante con el motivo.
+            $this->notificar->aUsuario(
+                (string) $solicitud['id_usuario'],
+                'Solicitud de tutor rechazada',
+                'Tu solicitud de habilitación como tutor fue rechazada. Motivo: '.$observacion,
+                '/solicitar-habilitacion',
+            );
         });
     }
 }

@@ -61,9 +61,10 @@ final class User extends Authenticatable
         return $this->hasOne(Student::class, 'id_estudiante', 'id_usuario');
     }
 
+    /** Rol TUTOR vigente: solo cuenta si tutor.habilitado = true (CU20 degradar). */
     public function tutor(): HasOne
     {
-        return $this->hasOne(Tutor::class, 'id_tutor', 'id_usuario');
+        return $this->hasOne(Tutor::class, 'id_tutor', 'id_usuario')->where('habilitado', true);
     }
 
     public function administrador(): HasOne

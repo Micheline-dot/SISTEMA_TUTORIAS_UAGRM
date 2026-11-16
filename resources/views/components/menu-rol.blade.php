@@ -29,7 +29,8 @@
 
     if ($esTutor) {
         $secciones[] = ['Área de tutor', [
-            ['tutor.tutorias', 'Mis tutorías', 'tutor.*'],
+            ['tutor.tutorias', 'Mis tutorías', 'tutor.tutorias'],
+            ['tutor.perfil-academico', 'Perfil académico', 'tutor.perfil-academico'],
         ]];
     }
 
@@ -37,6 +38,7 @@
         $secciones[] = ['Administración', [
             ['admin.solicitudes-tutor', 'Solicitudes de tutor', 'admin.solicitudes-tutor*'],
             ['admin.tutorias', 'Gestionar tutorías', 'admin.tutorias'],
+            ['admin.usuarios', 'Gestionar usuarios', 'admin.usuarios'],
         ]];
     }
 @endphp
@@ -47,6 +49,9 @@
 </a>
 <a class="{{ $itemClass }} {{ request()->routeIs('perfil') ? 'active' : '' }}" href="{{ route('perfil') }}">
     Mi perfil
+</a>
+<a class="{{ $itemClass }} {{ request()->routeIs('notificaciones') ? 'active' : '' }}" href="{{ route('notificaciones') }}">
+    Notificaciones
 </a>
 
 @foreach ($secciones as [$titulo, $items])

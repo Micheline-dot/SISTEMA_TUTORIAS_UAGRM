@@ -125,7 +125,8 @@ final class SolicitarHabilitacion extends Component
             'perfil' => $this->perfil(),
             'solicitudes' => $solicitudes,
             'tienePendiente' => ConsultarMisSolicitudesHabilitacion::tieneEstado($solicitudes, 'PENDIENTE'),
-            'tieneAprobada' => ConsultarMisSolicitudesHabilitacion::tieneEstado($solicitudes, 'APROBADA'),
+            // "Aprobada" = es tutor habilitado hoy (si fue degradado puede volver a solicitar).
+            'tieneAprobada' => Auth::user()->tieneRol('TUTOR'),
         ])->layout('layouts.student')->title('Quiero ser tutor');
     }
 }

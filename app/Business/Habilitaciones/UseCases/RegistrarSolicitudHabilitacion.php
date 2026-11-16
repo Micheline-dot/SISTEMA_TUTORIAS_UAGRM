@@ -6,6 +6,8 @@ use App\Business\Habilitaciones\Contracts\SolicitudHabilitacionRepository;
 use App\Business\Habilitaciones\Exceptions\DatosAcademicosIncompletos;
 use App\Business\Habilitaciones\Exceptions\SolicitudPendienteExistente;
 use App\Business\Habilitaciones\Exceptions\SolicitudYaAprobada;
+use App\Business\Notificaciones\UseCases\EnviarNotificacion;
+use App\Business\Usuarios\Contracts\RoleAssignmentRepository;
 use App\Business\Usuarios\Contracts\UserProfileRepository;
 use InvalidArgumentException;
 
@@ -28,6 +30,8 @@ final class RegistrarSolicitudHabilitacion
     public function __construct(
         private SolicitudHabilitacionRepository $repository,
         private UserProfileRepository $perfiles,
+        private RoleAssignmentRepository $roles,
+        private EnviarNotificacion $notificar,
     ) {
     }
 
@@ -51,7 +55,8 @@ final class RegistrarSolicitudHabilitacion
             throw new SolicitudPendienteExistente();
         }
 
-        if (ConsultarMisSolicitudesHabilitacion::tieneEstado($previas, 'APROBADA')) {
+        // Ya es tutor habilitado. (Si un admin lo degradó, puede volver a solicitar.)
+        if ($this->roles->hasRole((string) $idUsuario, 'TUTOR')) {
             throw new SolicitudYaAprobada();
         }
 
@@ -79,6 +84,16 @@ final class RegistrarSolicitudHabilitacion
         $datos['id_usuario'] = $idUsuario;
         $datos['estado'] = 'PENDIENTE';
 
-        return $this->repository->crear($datos);
+        $idSolicitud = $this->repository->crear($datos);
+
+        // CU19: avisar a los administradores que hay una solicitud por revisar.
+        $this->notificar->aUsuarios(
+            $this->roles->activeUserIdsWithRole('ADMINISTRADOR'),
+            'Nueva solicitud de tutor',
+            "{$perfil->firstNames} {$perfil->lastNames} solicitó habilitarse como tutor (".mb_strtolower($tipo).').',
+            '/administracion/solicitudes-tutor',
+        );
+
+        return $idSolicitud;
     }
 }

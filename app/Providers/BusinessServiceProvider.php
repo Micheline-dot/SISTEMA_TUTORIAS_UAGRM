@@ -46,6 +46,14 @@ final class BusinessServiceProvider extends ServiceProvider
 
         $this->app->bind(UserRepository::class, EloquentUserRepository::class);
         $this->app->bind(UserProfileRepository::class, EloquentUserProfileRepository::class);
+        $this->app->bind(
+            \App\Business\Usuarios\Contracts\UserAdminRepository::class,
+            \App\DataAccess\PostgreSQL\Users\Repositories\EloquentUserAdminRepository::class
+        );
+        $this->app->bind(
+            \App\Business\Notificaciones\Contracts\NotificacionRepository::class,
+            \App\DataAccess\PostgreSQL\Notificaciones\Repositories\EloquentNotificacionRepository::class
+        );
         $this->app->bind(ProfilePhotoStorage::class, LocalProfilePhotoStorage::class);
         $this->app->bind(AcademicProfileRepository::class, EloquentAcademicProfileRepository::class);
         $this->app->bind(FacultyRepository::class, ConfigFacultyRepository::class);

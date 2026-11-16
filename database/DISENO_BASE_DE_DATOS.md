@@ -46,7 +46,7 @@ erDiagram
 |---|---|
 | usuario | id_usuario PK identity, nombres v100, apellidos v100, correo v150 único, contrasena v255 (hash bcrypt), telefono v20, facultad v100, tipo_registro v30 (`ESTUDIANTE`/`DOCENTE`/`AUXILIAR`, `ADMINISTRADOR` solo admins), **activo (+)**; **(+)** foto_perfil v255, registro_auxiliar v30 único, codigo_docente v30 único. Teléfono, foto y nombres se editan en Mi perfil; facultad + tipo_registro + registros se registran una sola vez (facultad NOT NULL = completado) |
 | estudiante | id_estudiante PK/FK→usuario (cascade), registro v30 único (**(+)** anulable: se completa en Mi perfil; NULL para docentes) |
-| tutor | id_tutor PK/FK→usuario (cascade), tipo_academico v30 |
+| tutor | id_tutor PK/FK→usuario (cascade), tipo_academico v30; **(+)** habilitado bool (false = rol retirado por el admin, conserva historial) |
 | administrador | id_administrador PK/FK→usuario (cascade), cargo v100 |
 | perfil_academico | id_perfil_academico PK, biografia, enlaces, conocimiento (text), id_tutor único FK→tutor |
 | categoria | id_categoria PK, nombre v100 único |
@@ -59,7 +59,7 @@ erDiagram
 | formulario | id_formulario PK, titulo v150, preguntas text, id_calificacion FK cascade |
 | solicitud_habilitacion | id_solicitud PK, estado v20 (`pendiente`/`aprobada`/`rechazada`), fecha, comentario_rechazo, id_administrador FK, id_estudiante FK; **(+)** tipo_academico, codigo; **(+)** índice único parcial (id_estudiante) WHERE estado = `pendiente` (una sola solicitud pendiente por estudiante) |
 | documento_solicitud | id_documento PK, nombre v150 (tipo de documento), ruta v500 (PDF en `storage/app/private`), id_solicitud FK cascade |
-| notificacion | id_notificacion PK, mensaje v500, fecha, estado bool (false = no leída) |
+| notificacion | id_notificacion PK, mensaje v500, fecha, estado bool (false = no leída); **(+)** titulo v150, enlace v255 (ruta interna). Una notificación por destinatario; estado = leída |
 | notificacion_usuario | PK (id_usuario, id_notificacion), ambas FK cascade |
 
 ## 4. Reglas de negocio reflejadas en datos

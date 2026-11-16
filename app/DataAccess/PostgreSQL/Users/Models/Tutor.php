@@ -19,7 +19,9 @@ final class Tutor extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['id_tutor', 'tipo_academico'];
+    protected $fillable = ['id_tutor', 'tipo_academico', 'habilitado'];
+
+    protected $casts = ['habilitado' => 'boolean'];
 
     public function usuario(): BelongsTo
     {

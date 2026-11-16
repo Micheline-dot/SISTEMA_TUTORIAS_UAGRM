@@ -69,7 +69,7 @@
 
         .topbar h1 { font-size: 25px; margin: 0; }
 
-        .user { color: #65738a; font-size: 14px; }
+        .user { color: #65738a; font-size: 14px; display: flex; align-items: center; gap: 14px; }
 
         .welcome {
             background: linear-gradient(120deg, #173c68, #246b9c);
@@ -172,6 +172,7 @@
             .topbar { align-items: flex-start; flex-direction: column; }
         }
     </style>
+    @livewireStyles
 </head>
 
 <body>
@@ -204,7 +205,8 @@
             <h1>Panel principal</h1>
 
             <div class="user">
-                Sesión de: <strong>{{ $user->nombre_completo }}</strong>
+                <livewire:notificaciones.contador />
+                <span>Sesión de: <strong>{{ $user->nombre_completo }}</strong></span>
             </div>
         </header>
 
@@ -237,6 +239,12 @@
                     <p>Revisa, aprueba o rechaza las solicitudes de habilitación de tutores.</p>
                 </a>
 
+                <a class="card card-link" href="{{ route('admin.usuarios') }}">
+                    <div class="icon">☷</div>
+                    <h3>Gestionar usuarios</h3>
+                    <p>Crea cuentas, edita datos, activa o desactiva usuarios y retira el rol de tutor.</p>
+                </a>
+
             @else
 
                 <a class="card card-link" href="{{ route('estudiante.inscripciones') }}">
@@ -252,6 +260,16 @@
                 <h3>Mi perfil</h3>
                 <p>Actualiza tu foto, teléfono y nombre, y registra tus datos académicos.</p>
             </a>
+
+            @if ($esTutor)
+
+                <a class="card card-link" href="{{ route('tutor.perfil-academico') }}">
+                    <div class="icon">✎</div>
+                    <h3>Perfil académico</h3>
+                    <p>Completa tu biografía, conocimientos y enlaces para tus estudiantes.</p>
+                </a>
+
+            @endif
 
             @if ($esEstudiante && !$esTutor && !$esAdministrador)
 
@@ -274,5 +292,6 @@
 
     </main>
 
+    @livewireScripts
 </body>
 </html>

@@ -85,7 +85,7 @@
 
         .topbar h1 { font-size: 25px; margin: 0; }
 
-        .user { color: #65738a; font-size: 14px; }
+        .user { color: #65738a; font-size: 14px; display: flex; align-items: center; gap: 14px; }
 
         @media(max-width: 850px) {
             .sidebar { width: 190px; }
@@ -116,7 +116,8 @@
         <header class="topbar">
             <h1>{{ $title ?? 'Área de tutor' }}</h1>
             <div class="user">
-                Sesión de: <strong>{{ auth()->user()->nombre_completo }}</strong>
+                <livewire:notificaciones.contador />
+                <span>Sesión de: <strong>{{ auth()->user()->nombre_completo }}</strong></span>
             </div>
         </header>
 

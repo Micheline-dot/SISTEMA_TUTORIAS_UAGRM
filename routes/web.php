@@ -3,8 +3,11 @@
 use App\Presentation\Http\Controllers\DocumentoSolicitudHabilitacionController;
 use App\Presentation\Http\Controllers\FotoPerfilController;
 use App\Presentation\Http\Controllers\LogoutController;
+use App\Presentation\Livewire\Notificaciones\MisNotificaciones;
+use App\Presentation\Livewire\Tutor\PerfilAcademico;
 use App\Presentation\Livewire\Usuarios\MiPerfil;
 use App\Presentation\Livewire\Administracion\GestionarTutorias;
+use App\Presentation\Livewire\Administracion\GestionarUsuarios;
 use App\Presentation\Livewire\Auth\Login;
 use App\Presentation\Livewire\Auth\Register;
 use App\Presentation\Livewire\Cursos\CatalogoTutorias;
@@ -34,6 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/inicio', fn () => view('auth.home'))->name('home');
     Route::post('/logout', LogoutController::class)->name('logout');
 
+    // Notificaciones — CU19 (todos los roles)
+    Route::get('/notificaciones', MisNotificaciones::class)->name('notificaciones');
+
     // Mi perfil — CU02 (todos los roles)
     Route::get('/mi-perfil', MiPerfil::class)->name('perfil');
     Route::get('/usuarios/{userId}/foto', FotoPerfilController::class)
@@ -54,6 +60,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('rol:TUTOR')->group(function () {
         Route::get('/tutor/mis-tutorias', MisTutorias::class)
             ->name('tutor.tutorias');
+        Route::get('/tutor/perfil-academico', PerfilAcademico::class)
+            ->name('tutor.perfil-academico');
         Route::get('/tutor/tutorias/{courseId}/asistencia', GestionarAsistencia::class)
             ->whereNumber('courseId')
             ->name('tutor.asistencia');
@@ -68,5 +76,7 @@ Route::middleware('auth')->group(function () {
             ->name('admin.solicitudes-tutor.documento');
         Route::get('/tutorias', GestionarTutorias::class)
             ->name('admin.tutorias');
+        Route::get('/usuarios', GestionarUsuarios::class)
+            ->name('admin.usuarios');
     });
 });
