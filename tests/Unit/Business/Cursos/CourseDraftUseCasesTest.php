@@ -513,6 +513,19 @@ final class FakeCourseRepository implements CourseRepository
 
         return $this->persistedCourse;
     }
+    public function publishDraftOwnedBy(
+    string $courseId,
+    string $ownerTutorId,
+): ?CourseDetails {
+    return null;
+}
+
+/**@return list<\App\Business\Cursos\DTO\PublishedCourseSummary>*/
+public function searchPublished(
+    \App\Business\Cursos\DTO\CourseCatalogFilters $filters,
+): array {
+    return [];
+}
 
     public function currentCourse(): ?CourseDetails
     {

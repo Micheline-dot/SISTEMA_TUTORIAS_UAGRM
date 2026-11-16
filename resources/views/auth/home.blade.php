@@ -197,27 +197,28 @@
 
         <div class="nav-title">Mi cuenta</div>
 
-        <span class="nav-item">♙ &nbsp; Mi perfil</span>
-
         @if ($esEstudiante && !$esAdministrador)
             <div class="nav-title">Área de estudiante</div>
 
             <a class="nav-item" href="{{ route('habilitacion.solicitar') }}">
-                ♙ &nbsp; Solicitar ser tutor
+                ✦ &nbsp; Solicitar ser tutor
             </a>
         @endif
 
         @if ($esTutor)
             <div class="nav-title">Área de tutor</div>
 
-            <span class="nav-item">
-                ▤ &nbsp; Mis tutorías
-            </span>
+            <a class="nav-item" href="{{ route('tutor.tutorias') }}">
+                ▣ &nbsp; Mis tutorías
+            </a>
         @endif
 
         @if ($esAdministrador)
             <div class="nav-title">Administración</div>
 
+            <a class="nav-item" href="{{ route('admin.tutorias') }}">
+                Gestionar tutorías
+            </a>
             <a class="nav-item" href="{{ route('admin.solicitudes-tutor') }}">
                 ▤ &nbsp; Gestionar solicitudes
             </a>
@@ -271,17 +272,11 @@
 
             @else
 
-                <article class="card">
-                    <div class="icon">⌕</div>
-                    <h3>Buscar tutorías</h3>
-                    <p>Encuentra apoyo académico según las materias que necesitas reforzar.</p>
-                </article>
-
-                <article class="card">
-                    <div class="icon">▤</div>
-                    <h3>Mis inscripciones</h3>
-                    <p>Consulta las tutorías en las que te hayas inscrito.</p>
-                </article>
+                <a class="card card-link" href="{{ route('estudiante.inscripciones') }}">
+    <div class="icon">▣</div>
+    <h3>Mis inscripciones</h3>
+    <p>Consulta y administra las tutorías en las que te has inscrito.</p>
+</a>
 
             @endif
 

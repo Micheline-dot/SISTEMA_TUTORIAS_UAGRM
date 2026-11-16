@@ -4,18 +4,26 @@ namespace App\Presentation\Livewire\Habilitaciones;
 
 use App\Business\Habilitaciones\UseCases\AprobarSolicitudHabilitacion;
 use App\Business\Habilitaciones\UseCases\RechazarSolicitudHabilitacion;
-use App\Business\Habilitaciones\Contracts\SolicitudHabilitacionRepository;
+use App\Business\Habilitaciones\UseCases\ListarSolicitudesHabilitacionPendientes;
 use DomainException;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 final class GestionarSolicitudesHabilitacion extends Component
 {
+    protected ListarSolicitudesHabilitacionPendientes $listarSolicitudes;
+
     public string $observacion = '';
 
     public ?int $solicitudSeleccionada = null;
 
     public string $accion = '';
+
+    public function boot(
+        ListarSolicitudesHabilitacionPendientes $listarSolicitudes
+    ): void {
+        $this->listarSolicitudes = $listarSolicitudes;
+    }
 
     public function mount(): void
     {
@@ -118,8 +126,7 @@ final class GestionarSolicitudesHabilitacion extends Component
 
     public function render()
     {
-        $solicitudes = app(SolicitudHabilitacionRepository::class)
-            ->buscarPendientes();
+        $solicitudes = $this->listarSolicitudes->ejecutar();
 
         return view(
             'livewire.habilitaciones.gestionar-solicitudes-habilitacion',

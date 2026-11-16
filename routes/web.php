@@ -11,15 +11,20 @@ use App\Presentation\Livewire\Auth\Register;
 
 use App\Presentation\Livewire\Habilitaciones\SolicitarHabilitacion;
 use App\Presentation\Livewire\Habilitaciones\GestionarSolicitudesHabilitacion;
+use App\Presentation\Livewire\Cursos\MisTutorias;
+use App\Presentation\Livewire\Cursos\CatalogoTutorias;
+use App\Presentation\Livewire\Inscripciones\MisInscripciones;
+use App\Presentation\Livewire\Inscripciones\GestionarAsistencia;
+use App\Presentation\Livewire\Administracion\GestionarTutorias;
 
-// Página principal
+// PÃ¡gina principal
 Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('home')
         : redirect()->route('login');
 });
 
-// Rutas para usuarios que NO iniciaron sesión
+// Rutas para usuarios que NO iniciaron sesiÃ³n
 Route::middleware('guest')->group(function () {
 
     Route::get('/registro', Register::class)
@@ -30,7 +35,7 @@ Route::middleware('guest')->group(function () {
 
 });
 
-// Rutas para usuarios que SÍ iniciaron sesión
+// Rutas para usuarios que SÃ iniciaron sesiÃ³n
 Route::middleware('auth')->group(function () {
 
     // Panel principal
@@ -38,7 +43,7 @@ Route::middleware('auth')->group(function () {
         return view('auth.home');
     })->name('home');
 
-    // Solicitar habilitación como tutor
+    // Solicitar habilitaciÃ³n como tutor
     Route::get(
         '/solicitar-habilitacion',
         SolicitarHabilitacion::class
@@ -57,7 +62,27 @@ Route::middleware('auth')->group(function () {
     )->whereNumber('idSolicitud')
      ->name('admin.solicitudes-tutor.documento');
 
-    // Cerrar sesión
+    // Gestionar tutorÃ­as propias
+    Route::get('/tutor/mis-tutorias', MisTutorias::class)
+        ->name('tutor.tutorias');
+    // Cerrar sesiÃ³n
+    Route::get('/estudiante/buscar-tutorias', CatalogoTutorias::class)
+        ->name('estudiante.catalogo');
+    Route::get('/estudiante/mis-inscripciones', MisInscripciones::class)
+        ->name('estudiante.inscripciones');
+
+
+    // Gestionar asistencia de estudiantes inscritos
+    Route::get(
+        '/tutor/tutorias/{courseId}/asistencia',
+        GestionarAsistencia::class
+    )->whereNumber('courseId')
+     ->name('tutor.asistencia');
+    // Administración general de tutorías
+    Route::get(
+        '/administracion/tutorias',
+        GestionarTutorias::class
+    )->name('admin.tutorias');
     Route::post('/logout', LogoutController::class)
         ->name('logout');
 

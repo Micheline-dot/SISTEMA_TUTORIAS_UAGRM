@@ -4,7 +4,6 @@ namespace App\DataAccess\PostgreSQL\Habilitaciones\Repositories;
 
 use App\Business\Habilitaciones\Contracts\SolicitudHabilitacionRepository;
 use App\DataAccess\PostgreSQL\Habilitaciones\Models\SolicitudHabilitacionTutor;
-use Illuminate\Support\Facades\DB;
 
 final class EloquentSolicitudHabilitacionRepository implements SolicitudHabilitacionRepository
 {
@@ -23,23 +22,23 @@ final class EloquentSolicitudHabilitacionRepository implements SolicitudHabilita
     }
 
     public function buscarPendientes(): array
-{
-    return SolicitudHabilitacionTutor::query()
-        ->with('solicitante:id_usuario,nombre_completo')
-        ->where('estado', 'PENDIENTE')
-        ->orderBy('created_at')
-        ->get()
-        ->map(function ($solicitud) {
-            $datos = $solicitud->toArray();
+    {
+        return SolicitudHabilitacionTutor::query()
+            ->with('solicitante:id_usuario,nombre_completo')
+            ->where('estado', 'PENDIENTE')
+            ->orderBy('created_at')
+            ->get()
+            ->map(function ($solicitud) {
+                $datos = $solicitud->toArray();
 
-            $datos['nombre_solicitante'] =
-                $solicitud->solicitante?->nombre_completo
-                ?? 'Usuario no identificado';
+                $datos['nombre_solicitante'] =
+                    $solicitud->solicitante?->nombre_completo
+                    ?? 'Usuario no identificado';
 
-            return $datos;
-        })
-        ->toArray();
-}
+                return $datos;
+            })
+            ->toArray();
+    }
 
     public function buscarPorUsuario(int $idUsuario): array
     {
@@ -56,33 +55,26 @@ final class EloquentSolicitudHabilitacionRepository implements SolicitudHabilita
         string $estado,
         ?string $observacion
     ): bool {
-        if (! in_array($estado, ['APROBADA', 'RECHAZADA'], true)) {
+        if (!in_array($estado, ['APROBADA', 'RECHAZADA'], true)) {
             return false;
         }
 
-        return DB::transaction(function () use (
-            $idSolicitud,
-            $idAdministrador,
-            $estado,
-            $observacion
-        ): bool {
-            $solicitud = SolicitudHabilitacionTutor::query()
-                ->where('id_solicitud', $idSolicitud)
-                ->where('estado', 'PENDIENTE')
-                ->lockForUpdate()
-                ->first();
+        $solicitud = SolicitudHabilitacionTutor::query()
+            ->where('id_solicitud', $idSolicitud)
+            ->where('estado', 'PENDIENTE')
+            ->lockForUpdate()
+            ->first();
 
-            if ($solicitud === null) {
-                return false;
-            }
+        if ($solicitud === null) {
+            return false;
+        }
 
-            $solicitud->estado = $estado;
-            $solicitud->id_administrador_revisor = $idAdministrador;
-            $solicitud->observacion = $observacion;
-            $solicitud->fecha_revision = now();
-            $solicitud->save();
+        $solicitud->estado = $estado;
+        $solicitud->id_administrador_revisor = $idAdministrador;
+        $solicitud->observacion = $observacion;
+        $solicitud->fecha_revision = now();
+        $solicitud->save();
 
-            return true;
-        });
+        return true;
     }
 }

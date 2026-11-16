@@ -4,6 +4,8 @@ namespace App\DataAccess\PostgreSQL\Courses\Repositories;
 
 use App\Business\Cursos\Contracts\CourseRepository;
 use App\Business\Cursos\DTO\CourseDetails;
+use App\Business\Cursos\DTO\CourseCatalogFilters;
+use App\Business\Cursos\DTO\PublishedCourseSummary;
 use App\Business\Cursos\DTO\CourseDraftData;
 use App\Business\Cursos\DTO\CourseDraftPatch;
 use App\Business\Cursos\DTO\CourseModality;
@@ -114,6 +116,76 @@ final class EloquentCourseRepository implements CourseRepository
         return $this->toDetails($course);
     }
 
+    public function publishDraftOwnedBy(
+        string $courseId,
+        string $ownerTutorId,
+    ): ?CourseDetails {
+        $id = PostgreSqlIntegerId::toInteger($courseId);
+        $ownerId = PostgreSqlIntegerId::toInteger($ownerTutorId);
+
+        $updated = Course::query()
+            ->where('id_curso', $id)
+            ->where('id_tutor', $ownerId)
+            ->where('estado', CourseStatus::BORRADOR->value)
+            ->update([
+                'estado' => CourseStatus::PUBLICADO->value,
+            ]);
+
+        if ($updated !== 1) {
+            return null;
+        }
+
+        $course = Course::query()->find($id);
+
+        return $course === null
+            ? null
+            : $this->toDetails($course);
+    }
+
+    public function searchPublished(
+        CourseCatalogFilters $filters,
+    ): array {
+        $query = Course::query()
+            ->with('tutor:id_usuario,nombre_completo')
+            ->where('estado', CourseStatus::PUBLICADO->value);
+
+        if ($filters->search !== null && trim($filters->search) !== '') {
+            $term = trim($filters->search);
+
+            $query->where(function ($builder) use ($term): void {
+                $builder
+                    ->where('titulo', 'ILIKE', '%' . $term . '%')
+                    ->orWhere('descripcion', 'ILIKE', '%' . $term . '%');
+            });
+        }
+
+        if ($filters->modality !== null) {
+            $query->where('modalidad', $filters->modality->value);
+        }
+
+        if ($filters->isFree !== null) {
+            $query->where('es_gratuito', $filters->isFree);
+        }
+
+        return $query
+            ->orderByDesc('id_curso')
+            ->get()
+            ->map(static fn (Course $course): PublishedCourseSummary =>
+                new PublishedCourseSummary(
+                    id: PostgreSqlIntegerId::toString($course->id_curso),
+                    tutorId: PostgreSqlIntegerId::toString($course->id_tutor),
+                    tutorName: $course->tutor?->nombre_completo ?? 'Tutor UAGRM',
+                    title: $course->titulo,
+                    description: $course->descripcion,
+                    modality: $course->modalidad === null
+                        ? null
+                        : CourseModality::from($course->modalidad),
+                    totalSeats: $course->cupos,
+                    isFree: $course->es_gratuito,
+                )
+            )
+            ->all();
+    }
     private function toDetails(Course $course): CourseDetails
     {
         return new CourseDetails(
