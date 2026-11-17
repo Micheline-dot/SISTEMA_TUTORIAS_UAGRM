@@ -42,8 +42,8 @@ Un usuario puede ser estudiante y tutor a la vez. El sistema **no procesa pagos*
 | CU19 | RF19 | Recibir notificaciones | Media | ✅ | — (campana con contador en todos los roles, bandeja, marcar una/todas) |
 | CU20 | RF20 | Gestionar usuarios | Alta | ✅ | — (buscar/filtrar, crear estudiante/admin, editar, activar/desactivar, quitar rol tutor cancelando sus tutorías publicadas) |
 | CU21 | RF21 | Gestionar categorías | Media | ✅ | — (crear, renombrar, eliminar solo si no la usa ningún curso; 14 iniciales por seeder) |
-| CU22 | RF22 | Reportes del administrador | Media | ⬜ | Totales, mejores tutores, categoría/facultad más solicitada |
-| CU23 | RF23 | Reportes del tutor | Media | ⬜ | Mejor curso, promedio inscritos, publicados/concluidos |
+| CU22 | RF22 | Reportes del administrador | Media | ✅ | Totales, mejores tutores, categoría/facultad más solicitada; filtro por periodo, exportar CSV, imprimir |
+| CU23 | RF23 | Reportes del tutor | Media | ✅ | Mejor tutoría, promedio de inscritos, publicadas/concluidas, detalle por tutoría; periodo y CSV |
 
 Extra ya implementado: administración general de tutorías (listar, detalle, cancelar).
 
@@ -78,7 +78,7 @@ Extra ya implementado: administración general de tutorías (listar, detalle, ca
 
 **Fase 6 — Calificaciones**: 6.1 ✅ CU16 · 6.2 ✅ CU17 · 6.3 ✅ CU18 (migración 100022: un formulario por calificación).
 
-**Fase 7 — Reportes**: 7.1 CU22 · 7.2 CU23.
+**Fase 7 — Reportes**: 7.1 ✅ CU22 · 7.2 ✅ CU23 (sin cambios de esquema; el periodo filtra inscripciones y calificaciones).
 
 **Fase 8 — Cierre**: pruebas funcionales/integración, despliegue en VPS (Nginx + PHP-FPM).
 

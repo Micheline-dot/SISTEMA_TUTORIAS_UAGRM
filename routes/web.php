@@ -21,6 +21,8 @@ use App\Presentation\Livewire\Habilitaciones\GestionarSolicitudesHabilitacion;
 use App\Presentation\Livewire\Habilitaciones\SolicitarHabilitacion;
 use App\Presentation\Livewire\Inscripciones\GestionarAsistencia;
 use App\Presentation\Livewire\Inscripciones\MisInscripciones;
+use App\Presentation\Livewire\Reportes\ReportesAdmin;
+use App\Presentation\Livewire\Reportes\ReportesTutor;
 use Illuminate\Support\Facades\Route;
 
 // Página principal
@@ -67,7 +69,7 @@ Route::middleware('auth')->group(function () {
             ->name('estudiante.inscripciones');
     });
 
-    // Área de tutor — CU07–CU10, CU15
+    // Área de tutor — CU07–CU10, CU15, CU18, CU23
     Route::middleware('rol:TUTOR')->group(function () {
         Route::get('/tutor/mis-tutorias', MisTutorias::class)
             ->name('tutor.tutorias');
@@ -75,6 +77,8 @@ Route::middleware('auth')->group(function () {
             ->name('tutor.perfil-academico');
         Route::get('/tutor/resenas', ResenasTutor::class)
             ->name('tutor.resenas');
+        Route::get('/tutor/reportes', ReportesTutor::class)
+            ->name('tutor.reportes');
         Route::get('/tutor/tutorias/{courseId}', GestionarTutoria::class)
             ->whereNumber('courseId')
             ->name('tutor.tutoria');
@@ -83,7 +87,7 @@ Route::middleware('auth')->group(function () {
             ->name('tutor.asistencia');
     });
 
-    // Administración — CU04, CU05, CU10 (cancelación)
+    // Administración — CU04, CU05, CU10 (cancelación), CU20–CU22
     Route::middleware('rol:ADMINISTRADOR')->prefix('administracion')->group(function () {
         Route::get('/solicitudes-tutor', GestionarSolicitudesHabilitacion::class)
             ->name('admin.solicitudes-tutor');
@@ -96,5 +100,7 @@ Route::middleware('auth')->group(function () {
             ->name('admin.usuarios');
         Route::get('/categorias', GestionarCategorias::class)
             ->name('admin.categorias');
+        Route::get('/reportes', ReportesAdmin::class)
+            ->name('admin.reportes');
     });
 });
