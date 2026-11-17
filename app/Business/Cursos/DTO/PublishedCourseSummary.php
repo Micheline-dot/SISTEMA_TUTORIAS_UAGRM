@@ -13,6 +13,17 @@ final readonly class PublishedCourseSummary
         public ?CourseModality $modality,
         public ?int $totalSeats,
         public ?bool $isFree,
+        public ?string $categoryName = null,
+        public ?string $startDate = null,
+        public ?string $endDate = null,
+        public int $activeEnrollments = 0,
+        public ?float $tutorRating = null,
+        public int $tutorRatingCount = 0,
     ) {
+    }
+
+    public function availableSeats(): ?int
+    {
+        return $this->totalSeats === null ? null : max(0, $this->totalSeats - $this->activeEnrollments);
     }
 }

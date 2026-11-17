@@ -52,6 +52,10 @@ final class BusinessServiceProvider extends ServiceProvider
             \App\DataAccess\PostgreSQL\Courses\Repositories\EloquentSyllabusRepository::class
         );
         $this->app->bind(
+            \App\Business\Cursos\Contracts\TutorRatingRepository::class,
+            \App\DataAccess\PostgreSQL\Courses\Repositories\EloquentTutorRatingRepository::class
+        );
+        $this->app->bind(
             \App\Business\Cursos\Contracts\CourseLifecycleRepository::class,
             \App\DataAccess\PostgreSQL\Courses\Repositories\EloquentCourseLifecycleRepository::class
         );

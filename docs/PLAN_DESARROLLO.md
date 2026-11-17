@@ -31,9 +31,9 @@ Un usuario puede ser estudiante y tutor a la vez. El sistema **no procesa pagos*
 | CU08 | RF08 | Gestionar temarios | Alta | ✅ | — (temas con fecha dentro del periodo y estado PENDIENTE/COMPLETADO; recursos como enlaces http/https) |
 | CU09 | RF09 | Publicar curso | Alta | ✅ | — (valida datos completos, inicio no pasado y al menos un tema; confirmación previa) |
 | CU10 | RF10 | Gestionar curso publicado | Alta | ✅ | — (cupos ≥ inscritos, fechas con aviso a inscritos, cancelar con motivo, finalizar) |
-| CU11 | RF11 | Realizar búsqueda | Alta | 🟡 | Buscar por nombre del tutor y categoría |
-| CU12 | RF12 | Filtrar resultados | Alta | 🟡 | Filtro por categoría, valoración y cupos |
-| CU13 | RF13 | Visualizar detalles del curso | Alta | ⬜ | Detalle + temario + perfil del tutor |
+| CU11 | RF11 | Realizar búsqueda | Alta | ✅ | — (título, descripción, nombre del tutor y categoría; búsqueda en la URL) |
+| CU12 | RF12 | Filtrar resultados | Alta | ✅ | — (categoría, modalidad, costo, valoración mínima del tutor, solo con cupos; ordenar por recientes/próximas/valoración) |
+| CU13 | RF13 | Visualizar detalles del curso | Alta | ✅ | — (datos, cupos libres, temario, perfil y valoración del tutor; enlaces de recursos solo para inscritos) |
 | CU14 | RF14 | Gestionar inscripción | Alta | 🟡 | Motivo al cancelar |
 | CU15 | RF15 | Gestionar estudiantes inscritos | Alta | ✅ | (asistencia hecha) retirar estudiante no confirmado |
 | CU16 | RF16 | Calificar tutor y reseña | Media | ⬜ | 1–5 estrellas + comentario, solo con participación verificada |
@@ -72,7 +72,7 @@ Extra ya implementado: administración general de tutorías (listar, detalle, ca
 - 3.3 ✅ CU08 Temarios y recursos (migración 100021: recurso.enlace, temario.estado).
 - 3.4 ✅ CU09 / CU10 publicar y gestionar curso publicado.
 
-**Fase 4 — Búsqueda**: 4.1 CU11 · 4.2 CU12 · 4.3 CU13.
+**Fase 4 — Búsqueda**: 4.1 ✅ CU11 · 4.2 ✅ CU12 · 4.3 ✅ CU13 (+ regla: el tutor no se inscribe en su propia tutoría).
 
 **Fase 5 — Inscripciones**: 5.1 CU14 ajustes · 5.2 CU15 retirar estudiante.
 

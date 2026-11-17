@@ -18,6 +18,13 @@
         .pa .ok { background: #e8f6ee; color: #1d6b3f; border-radius: 8px; padding: 12px 14px; }
         .pa .warn { background: #fff4e5; color: #8a5300; border-radius: 8px; padding: 12px 14px; font-size: 14px; }
         .pa .contador { color: #8492a6; font-size: 12px; text-align: right; }
+        .pa .opc { color: #8492a6; font-weight: 400; }
+        .pa .enlaces { display: grid; gap: 8px; }
+        .pa .enlace .fila { align-items: center; }
+        .pa .enlace-icono { font-size: 16px; }
+        .pa .btn.quitar { background: #fdecea; color: #9b2c22; padding: 9px 12px; }
+        .pa .btn.agregar { margin-top: 10px; }
+        .pa .vacio-enlaces { color: #8492a6; font-size: 14px; border: 1px dashed #c5d1e0; border-radius: 8px; padding: 12px; text-align: center; }
     </style>
 
     @if (session('perfil_ok'))
@@ -59,9 +66,30 @@
             @endforelse
         </div>
 
-        <label for="enlaces">Enlaces (uno por línea, máximo 5)</label>
-        <textarea id="enlaces" rows="4" wire:model="enlaces"
-                  placeholder="https://www.linkedin.com/in/tu-perfil&#10;https://github.com/tu-usuario"></textarea>
+        <label>Enlaces <span class="opc">(opcional · máximo {{ \App\Business\Usuarios\UseCases\ManageAcademicProfile::MAX_LINKS }})</span></label>
+        <p class="hint" style="margin-bottom: 8px;">LinkedIn, GitHub, tu página personal o un portafolio.</p>
+
+        <div class="enlaces">
+            @forelse ($enlaces as $i => $enlace)
+                <div class="enlace" wire:key="enlace-{{ $i }}">
+                    <div class="fila">
+                        <span class="enlace-icono" aria-hidden="true">🔗</span>
+                        <input type="url" wire:model.blur="enlaces.{{ $i }}" maxlength="255"
+                               placeholder="https://www.linkedin.com/in/tu-perfil" aria-label="Enlace {{ $i + 1 }}">
+                        <button type="button" class="btn quitar" wire:click="quitarEnlace({{ $i }})" aria-label="Quitar enlace {{ $i + 1 }}">Quitar</button>
+                    </div>
+                    @error('enlaces.'.$i) <div class="error">{{ $message }}</div> @enderror
+                </div>
+            @empty
+                <div class="vacio-enlaces">Aún no agregaste enlaces.</div>
+            @endforelse
+        </div>
+
+        @if (count($enlaces) < \App\Business\Usuarios\UseCases\ManageAcademicProfile::MAX_LINKS)
+            <button type="button" class="btn sec agregar" wire:click="agregarEnlace">+ Agregar enlace</button>
+        @else
+            <p class="hint" style="margin-top: 8px;">Llegaste al máximo de enlaces.</p>
+        @endif
         @error('enlaces') <div class="error">{{ $message }}</div> @enderror
 
         <div style="margin-top: 18px;">

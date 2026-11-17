@@ -1,4 +1,4 @@
-﻿<div class="mt">
+<div class="mt">
     <style>
         .mt { display: grid; gap: 18px; }
         .mt .barra { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }

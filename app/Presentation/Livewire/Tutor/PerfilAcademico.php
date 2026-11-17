@@ -12,8 +12,8 @@ final class PerfilAcademico extends Component
 {
     public string $biografia = '';
 
-    /** Un enlace por línea. */
-    public string $enlaces = '';
+    /** Enlaces: un campo por enlace, se agregan con "+ Agregar enlace". */
+    public array $enlaces = [];
 
     /** Conocimientos agregados como etiquetas. */
     public array $conocimientos = [];
@@ -32,8 +32,26 @@ final class PerfilAcademico extends Component
         $datos = $this->perfil->get($this->idTutor());
 
         $this->biografia = $datos->biography ?? '';
-        $this->enlaces = implode("\n", $datos->links);
+        $this->enlaces = $datos->links;
         $this->conocimientos = $datos->knowledge;
+    }
+
+    public function agregarEnlace(): void
+    {
+        if (count($this->enlaces) >= ManageAcademicProfile::MAX_LINKS) {
+            $this->addError('enlaces', 'Puedes agregar como máximo '.ManageAcademicProfile::MAX_LINKS.' enlaces.');
+
+            return;
+        }
+
+        $this->enlaces[] = '';
+    }
+
+    public function quitarEnlace(int $indice): void
+    {
+        unset($this->enlaces[$indice]);
+        $this->enlaces = array_values($this->enlaces);
+        $this->resetErrorBag();
     }
 
     public function agregarConocimiento(): void
@@ -76,19 +94,23 @@ final class PerfilAcademico extends Component
     {
         $this->validate([
             'biografia' => ['nullable', 'string', 'max:'.ManageAcademicProfile::MAX_BIOGRAPHY],
-            'enlaces' => ['nullable', 'string', 'max:2000'],
+            'enlaces' => ['array', 'max:'.ManageAcademicProfile::MAX_LINKS],
+            'enlaces.*' => ['nullable', 'string', 'max:255', 'url:http,https'],
             'conocimientos' => ['array', 'max:'.ManageAcademicProfile::MAX_KNOWLEDGE],
-        ], [], ['biografia' => 'biografía', 'enlaces' => 'enlaces', 'conocimientos' => 'conocimientos']);
-
-        $lista = preg_split('/\r\n|\r|\n/', $this->enlaces) ?: [];
+        ], [
+            'enlaces.*.url' => 'Escribe la dirección completa, empezando con http:// o https://',
+            'enlaces.*.max' => 'El enlace no puede superar los 255 caracteres.',
+            'enlaces.max' => 'Puedes agregar como máximo '.ManageAcademicProfile::MAX_LINKS.' enlaces.',
+        ], ['biografia' => 'biografía', 'conocimientos' => 'conocimientos']);
 
         try {
-            $this->perfil->save($this->idTutor(), $this->biografia, $lista, $this->conocimientos);
+            $this->perfil->save($this->idTutor(), $this->biografia, array_values($this->enlaces), $this->conocimientos);
+
+            // Mostrar la lista ya limpia (sin vacíos ni duplicados).
+            $this->enlaces = $this->perfil->get($this->idTutor())->links;
             session()->flash('perfil_ok', 'Tu perfil académico se guardó correctamente.');
-        } catch (InvalidProfileData $e) {
-            $this->addError('enlaces', str_starts_with($e->getMessage(), 'Invalid link')
-                ? 'Revisa los enlaces: cada línea debe ser una dirección completa que empiece con http:// o https://. Máximo '.ManageAcademicProfile::MAX_LINKS.'.'
-                : 'Revisa los datos ingresados.');
+        } catch (InvalidProfileData) {
+            $this->addError('enlaces', 'Revisa los enlaces: cada uno debe ser una dirección completa que empiece con http:// o https://.');
         }
     }
 

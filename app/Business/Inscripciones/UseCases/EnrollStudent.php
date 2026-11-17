@@ -6,6 +6,7 @@ use App\Business\Inscripciones\Contracts\InscripcionRepository;
 use App\Business\Inscripciones\Contracts\StudentEligibility;
 use App\Business\Inscripciones\Exceptions\AlreadyEnrolled;
 use App\Business\Inscripciones\Exceptions\AttendanceAlreadyVerified;
+use App\Business\Inscripciones\Exceptions\CannotEnrollOwnCourse;
 use App\Business\Inscripciones\Exceptions\CourseFull;
 use App\Business\Inscripciones\Exceptions\CourseNotAvailable;
 use App\Business\Inscripciones\Exceptions\StudentNotEligible;
@@ -30,6 +31,10 @@ final class EnrollStudent
 
             if ($course === null || $course['estado'] !== 'PUBLICADO') {
                 throw new CourseNotAvailable();
+            }
+
+            if ((string) ($course['id_tutor'] ?? '') === $studentId) {
+                throw new CannotEnrollOwnCourse();
             }
 
             if ($this->inscripciones->buscarInscripcionActiva($studentId, $courseId) !== null) {

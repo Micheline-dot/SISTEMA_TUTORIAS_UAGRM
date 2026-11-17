@@ -10,6 +10,7 @@ use App\Presentation\Livewire\Administracion\GestionarTutorias;
 use App\Presentation\Livewire\Administracion\GestionarUsuarios;
 use App\Presentation\Livewire\Administracion\GestionarCategorias;
 use App\Presentation\Livewire\Cursos\GestionarTutoria;
+use App\Presentation\Livewire\Cursos\DetalleTutoria;
 use App\Presentation\Livewire\Auth\Login;
 use App\Presentation\Livewire\Auth\Register;
 use App\Presentation\Livewire\Cursos\CatalogoTutorias;
@@ -54,6 +55,9 @@ Route::middleware('auth')->group(function () {
             ->name('habilitacion.solicitar');
         Route::get('/estudiante/buscar-tutorias', CatalogoTutorias::class)
             ->name('estudiante.catalogo');
+        Route::get('/estudiante/tutorias/{courseId}', DetalleTutoria::class)
+            ->whereNumber('courseId')
+            ->name('estudiante.tutoria');
         Route::get('/estudiante/mis-inscripciones', MisInscripciones::class)
             ->name('estudiante.inscripciones');
     });
