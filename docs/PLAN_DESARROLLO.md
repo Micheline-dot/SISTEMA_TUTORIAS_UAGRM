@@ -80,7 +80,7 @@ Extra ya implementado: administración general de tutorías (listar, detalle, ca
 
 **Fase 7 — Reportes**: 7.1 ✅ CU22 · 7.2 ✅ CU23 (sin cambios de esquema; el periodo filtra inscripciones y calificaciones).
 
-**Fase 8 — Cierre**: pruebas funcionales/integración, despliegue en VPS (Nginx + PHP-FPM).
+**Fase 8 — Cierre**: 8.1 ✅ pruebas funcionales/integración (46 pruebas en PostgreSQL aislado, ver `docs/PRUEBAS.md`) · 8.2 ✅ despliegue preparado para VPS Nginx + PHP-FPM (`deploy/`, guía en `docs/DESPLIEGUE.md`); falta ejecutarlo en el servidor definitivo.
 
 ## 4. Forma de trabajo
 
