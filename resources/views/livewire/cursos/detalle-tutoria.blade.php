@@ -38,6 +38,8 @@
         .dt .chip { background: #e7f2fb; color: #1d5a86; border-radius: 999px; padding: 4px 10px; font-size: 13px; }
         .dt .enlaces { margin: 0; padding-left: 18px; font-size: 14px; }
         .dt .enlaces a { color: #174ea6; overflow-wrap: anywhere; }
+        .dt .resena { border-top: 1px solid #eef2f7; padding: 10px 0; }
+        .dt .resena:first-of-type { border-top: 0; padding-top: 0; }
         @media (max-width: 860px) { .dt .layout { grid-template-columns: 1fr; } .dt .datos { grid-template-columns: 1fr 1fr; } }
     </style>
 
@@ -154,6 +156,20 @@
                         @endforeach
                     </ul>
                 @endif
+            </section>
+
+            <section class="panel">
+                <h3>Reseñas de estudiantes</h3>
+                @forelse ($d->latestReviews as $r)
+                    <div class="resena" wire:key="resena-{{ $r->id }}">
+                        <div><span class="estrellas" aria-label="{{ $r->score }} de 5">{{ str_repeat('★', $r->score) }}{{ str_repeat('☆', 5 - $r->score) }}</span>
+                            <span class="sub">· {{ $r->studentName }} · {{ $r->date }}</span></div>
+                        <div class="sub">{{ $r->courseTitle }}</div>
+                        <p class="bio" style="margin: 4px 0 0;">{{ $r->comment }}</p>
+                    </div>
+                @empty
+                    <p class="sub" style="margin: 0;">Este tutor aún no tiene reseñas.</p>
+                @endforelse
             </section>
         </div>
     </div>

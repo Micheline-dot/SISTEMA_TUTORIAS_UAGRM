@@ -80,7 +80,7 @@ final class MisInscripciones extends Component
     {
         try {
             $this->confirmParticipation->execute($this->studentId(), $courseId);
-            session()->flash('success', '¡Gracias! Confirmaste tu participación en la tutoría.');
+            session()->flash('success', '¡Gracias! Confirmaste tu participación. Ya puedes calificar al tutor.');
         } catch (EnrollmentRuleViolation|EnrollmentNotFound $e) {
             $this->addError('general', $e->getMessage());
         } catch (StudentNotEligible) {

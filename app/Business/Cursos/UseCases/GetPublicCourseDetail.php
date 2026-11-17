@@ -2,6 +2,7 @@
 
 namespace App\Business\Cursos\UseCases;
 
+use App\Business\Calificaciones\Contracts\RatingRepository;
 use App\Business\Cursos\Contracts\CourseRepository;
 use App\Business\Cursos\Contracts\SyllabusRepository;
 use App\Business\Cursos\Contracts\TutorRatingRepository;
@@ -25,6 +26,7 @@ final class GetPublicCourseDetail
         private readonly AcademicProfileRepository $academicProfiles,
         private readonly TutorRatingRepository $ratings,
         private readonly InscripcionRepository $inscripciones,
+        private readonly RatingRepository $reviews,
     ) {
     }
 
@@ -63,6 +65,7 @@ final class GetPublicCourseDetail
             viewerIsEnrolled: $isEnrolled,
             viewerIsOwner: $isOwner,
             viewerAlreadyParticipated: $participated,
+            latestReviews: $this->reviews->latestReviewsForTutor($course->ownerTutorId, 5),
         );
     }
 }

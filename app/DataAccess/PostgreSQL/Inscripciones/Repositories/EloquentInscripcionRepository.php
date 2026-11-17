@@ -164,15 +164,23 @@ final class EloquentInscripcionRepository implements InscripcionRepository
         return $this->baseQuery()
             ->join('curso as c', 'c.id_curso', '=', 'ci.id_curso')
             ->join('usuario as t', 't.id_usuario', '=', 'c.id_tutor')
+            ->leftJoin('calificacion_resena as cr', function ($j): void {
+                $j->on('cr.id_inscripcion', '=', 'ci.id_inscripcion')->on('cr.id_curso', '=', 'ci.id_curso');
+            })
+            ->leftJoin('formulario as f', 'f.id_calificacion', '=', 'cr.id_calificacion')
             ->where('i.id_usuario', PostgreSqlIntegerId::toInteger($studentId))
             ->addSelect([
                 'c.titulo', 'c.descripcion', 'c.modalidad', 'c.estado as estado_curso', 'c.fecha_inicio', 'c.fecha_finalizacion',
                 't.id_usuario as id_tutor', 't.nombres as tutor_nombres', 't.apellidos as tutor_apellidos',
+                'cr.puntuacion as calificacion', 'f.id_formulario',
             ])
             ->orderByDesc('i.fecha')
             ->orderByDesc('i.id_inscripcion')
             ->get()
             ->map(fn ($row): array => $this->toArray($row) + [
+                // CU16/CU17: estado de la calificación de esta inscripción.
+                'calificacion' => $row->calificacion === null ? null : (int) $row->calificacion,
+                'encuesta_respondida' => $row->id_formulario !== null,
                 'curso' => [
                     'id_curso' => (int) $row->id_curso,
                     'titulo' => $row->titulo,

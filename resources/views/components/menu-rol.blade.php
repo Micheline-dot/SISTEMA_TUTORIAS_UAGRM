@@ -35,6 +35,7 @@
         'etiqueta' => '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
         'calendario' => '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
         'menu' => '<path d="M4 6h16M4 12h16M4 18h16"/>',
+        'estrella' => '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/>',
         'estudiante' => '<path d="M2 9l10-5 10 5-10 5z"/><path d="M22 9v6"/>',
         'tutor' => '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
         'admin' => '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
@@ -66,6 +67,7 @@
         $secciones[] = ['Área de tutor', 'tutor', [
             ['tutor.tutorias', 'Mis tutorías', ['tutor.tutorias', 'tutor.tutoria', 'tutor.asistencia'], 'calendario', null],
             ['tutor.perfil-academico', 'Perfil académico', 'tutor.perfil-academico', 'birrete', null],
+            ['tutor.resenas', 'Reseñas y encuestas', 'tutor.resenas', 'estrella', null],
         ]];
     }
 

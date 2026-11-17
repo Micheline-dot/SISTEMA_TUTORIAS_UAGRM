@@ -17,6 +17,7 @@
         .mi .e-cancelada, .mi .e-eliminada { background: #fdecea; color: #9b2c22; }
         .mi .aviso { grid-column: 1 / -1; background: #fff9ec; color: #7a5410; border-radius: 8px; padding: 10px 12px; font-size: 13.5px; }
         .mi .motivo { grid-column: 1 / -1; color: #9b2c22; font-size: 13.5px; }
+        .mi .calificado { color: #e0a100; font-size: 20px; letter-spacing: 2px; text-align: center; }
         .mi .acciones { display: flex; flex-direction: column; gap: 8px; align-items: stretch; min-width: 170px; }
         .mi .btn { padding: 9px 14px; border: 0; border-radius: 8px; background: #174ea6; color: white; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; text-align: center; text-decoration: none; }
         .mi .btn.ok-btn { background: #16804a; }
@@ -91,6 +92,15 @@
                         @if ($i['estado'] === 'INSCRITO' && $p === 'asistio')
                             <button class="btn ok-btn" wire:click="confirmarParticipacion('{{ $i['id_curso'] }}')"
                                     wire:confirm="¿Confirmas que participaste en esta tutoría?">Confirmar participación</button>
+                        @endif
+                        @if ($i['estado'] === 'INSCRITO' && $p === 'confirmada')
+                            @if ($i['calificacion'] === null)
+                                <a class="btn ok-btn" href="{{ route('estudiante.calificar', $i['id_curso']) }}" wire:navigate>★ Calificar tutor</a>
+                            @elseif (! $i['encuesta_respondida'])
+                                <a class="btn" href="{{ route('estudiante.calificar', $i['id_curso']) }}" wire:navigate>Responder encuesta</a>
+                            @else
+                                <span class="calificado" aria-label="Calificaste con {{ $i['calificacion'] }} de 5">{{ str_repeat('★', $i['calificacion']) }}{{ str_repeat('☆', 5 - $i['calificacion']) }}</span>
+                            @endif
                         @endif
                         @if ($i['estado'] === 'INSCRITO' && $p === 'activa' && $cursoActivo)
                             <button class="btn peligro" wire:click="abrirCancelar('{{ $i['id_curso'] }}')">Cancelar inscripción</button>

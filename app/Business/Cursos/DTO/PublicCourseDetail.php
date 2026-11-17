@@ -25,6 +25,8 @@ final readonly class PublicCourseDetail
         public bool $viewerIsEnrolled,
         public bool $viewerIsOwner,
         public bool $viewerAlreadyParticipated,
+        /** @var list<\App\Business\Calificaciones\DTO\Review> últimas reseñas del tutor (CU16) */
+        public array $latestReviews = [],
     ) {
     }
 

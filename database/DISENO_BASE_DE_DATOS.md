@@ -56,7 +56,7 @@ erDiagram
 | inscripcion | id_inscripcion PK, fecha, estado bool (true activa), motivo_cancelacion v500, id_usuario FK→usuario |
 | curso_inscripcion | PK (id_inscripcion, id_curso), estado v20: `activa`, `asistio` (tutor registró asistencia), `confirmada` (estudiante confirmó), `cancelada`, `eliminada` (retirado por tutor) |
 | calificacion_resena | id_calificacion PK, puntuacion (1–5 **(+)**), fecha, comentario, único (id_inscripcion,id_curso) FK→curso_inscripcion |
-| formulario | id_formulario PK, titulo v150, preguntas text, id_calificacion FK cascade |
+| formulario | id_formulario PK, titulo v150, preguntas text, id_calificacion FK cascade; **(+)** único por id_calificacion; preguntas guarda JSON [{clave, pregunta, tipo, respuesta}] |
 | solicitud_habilitacion | id_solicitud PK, estado v20 (`pendiente`/`aprobada`/`rechazada`), fecha, comentario_rechazo, id_administrador FK, id_estudiante FK; **(+)** tipo_academico, codigo; **(+)** índice único parcial (id_estudiante) WHERE estado = `pendiente` (una sola solicitud pendiente por estudiante) |
 | documento_solicitud | id_documento PK, nombre v150 (tipo de documento), ruta v500 (PDF en `storage/app/private`), id_solicitud FK cascade |
 | notificacion | id_notificacion PK, mensaje v500, fecha, estado bool (false = no leída); **(+)** titulo v150, enlace v255 (ruta interna). Una notificación por destinatario; estado = leída |

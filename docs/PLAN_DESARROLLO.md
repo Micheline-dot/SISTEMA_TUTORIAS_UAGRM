@@ -36,9 +36,9 @@ Un usuario puede ser estudiante y tutor a la vez. El sistema **no procesa pagos*
 | CU13 | RF13 | Visualizar detalles del curso | Alta | ✅ | — (datos, cupos libres, temario, perfil y valoración del tutor; enlaces de recursos solo para inscritos) |
 | CU14 | RF14 | Gestionar inscripción | Alta | ✅ | — (cancelar con motivo y aviso al tutor; confirmar participación tras la asistencia; activas/historial) |
 | CU15 | RF15 | Gestionar estudiantes inscritos | Alta | ✅ | — (registrar asistencia, retirar con motivo a quien no tiene asistencia, historial; el retirado no puede reinscribirse) |
-| CU16 | RF16 | Calificar tutor y reseña | Media | ⬜ | 1–5 estrellas + comentario, solo con participación verificada |
-| CU17 | RF17 | Responder formulario | Media | ⬜ | Formulario tras calificar |
-| CU18 | RF18 | Ver reseñas y formularios | Media | ⬜ | Vista del tutor |
+| CU16 | RF16 | Calificar tutor y reseña | Media | ✅ | — (1–5 estrellas + reseña, solo con participación confirmada, una vez; aviso al tutor; visible en búsqueda y detalle) |
+| CU17 | RF17 | Responder formulario | Media | ✅ | — (encuesta de 5 preguntas tras calificar; JSON en formulario.preguntas; una por calificación) |
+| CU18 | RF18 | Ver reseñas y formularios | Media | ✅ | — (promedio, distribución, reseñas, resultados de encuesta y sugerencias; filtro por tutoría) |
 | CU19 | RF19 | Recibir notificaciones | Media | ✅ | — (campana con contador en todos los roles, bandeja, marcar una/todas) |
 | CU20 | RF20 | Gestionar usuarios | Alta | ✅ | — (buscar/filtrar, crear estudiante/admin, editar, activar/desactivar, quitar rol tutor cancelando sus tutorías publicadas) |
 | CU21 | RF21 | Gestionar categorías | Media | ✅ | — (crear, renombrar, eliminar solo si no la usa ningún curso; 14 iniciales por seeder) |
@@ -76,7 +76,7 @@ Extra ya implementado: administración general de tutorías (listar, detalle, ca
 
 **Fase 5 — Inscripciones**: 5.1 ✅ CU14 ajustes · 5.2 ✅ CU15 retirar estudiante.
 
-**Fase 6 — Calificaciones**: 6.1 CU16 · 6.2 CU17 · 6.3 CU18.
+**Fase 6 — Calificaciones**: 6.1 ✅ CU16 · 6.2 ✅ CU17 · 6.3 ✅ CU18 (migración 100022: un formulario por calificación).
 
 **Fase 7 — Reportes**: 7.1 CU22 · 7.2 CU23.
 

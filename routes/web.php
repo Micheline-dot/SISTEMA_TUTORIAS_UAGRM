@@ -11,6 +11,8 @@ use App\Presentation\Livewire\Administracion\GestionarUsuarios;
 use App\Presentation\Livewire\Administracion\GestionarCategorias;
 use App\Presentation\Livewire\Cursos\GestionarTutoria;
 use App\Presentation\Livewire\Cursos\DetalleTutoria;
+use App\Presentation\Livewire\Calificaciones\CalificarTutoria;
+use App\Presentation\Livewire\Calificaciones\ResenasTutor;
 use App\Presentation\Livewire\Auth\Login;
 use App\Presentation\Livewire\Auth\Register;
 use App\Presentation\Livewire\Cursos\CatalogoTutorias;
@@ -58,6 +60,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/estudiante/tutorias/{courseId}', DetalleTutoria::class)
             ->whereNumber('courseId')
             ->name('estudiante.tutoria');
+        Route::get('/estudiante/tutorias/{courseId}/calificar', CalificarTutoria::class)
+            ->whereNumber('courseId')
+            ->name('estudiante.calificar');
         Route::get('/estudiante/mis-inscripciones', MisInscripciones::class)
             ->name('estudiante.inscripciones');
     });
@@ -68,6 +73,8 @@ Route::middleware('auth')->group(function () {
             ->name('tutor.tutorias');
         Route::get('/tutor/perfil-academico', PerfilAcademico::class)
             ->name('tutor.perfil-academico');
+        Route::get('/tutor/resenas', ResenasTutor::class)
+            ->name('tutor.resenas');
         Route::get('/tutor/tutorias/{courseId}', GestionarTutoria::class)
             ->whereNumber('courseId')
             ->name('tutor.tutoria');
