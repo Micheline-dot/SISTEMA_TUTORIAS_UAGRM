@@ -19,8 +19,6 @@ use Illuminate\Support\Facades\DB;
  */
 final class EloquentInscripcionRepository implements InscripcionRepository
 {
-    public const MOTIVO_CANCELACION_VOLUNTARIA = 'Cancelada por el estudiante';
-
     public function bloquearCurso(string $courseId): ?array
     {
         $course = Course::query()
@@ -77,12 +75,71 @@ final class EloquentInscripcionRepository implements InscripcionRepository
         return (int) $inscripcion->id_inscripcion;
     }
 
-    public function cancelar(string $studentId, string $courseId): bool
+    public function cancelar(string $studentId, string $courseId, string $motivo): bool
     {
+        return $this->desactivar($studentId, $courseId, $motivo, CursoInscripcion::CANCELADA, false);
+    }
+
+    public function retirar(string $studentId, string $courseId, string $motivo): bool
+    {
+        return $this->desactivar($studentId, $courseId, $motivo, CursoInscripcion::ELIMINADA, true);
+    }
+
+    public function fueRetirado(string $studentId, string $courseId): bool
+    {
+        return $this->baseQuery()
+            ->where('i.id_usuario', PostgreSqlIntegerId::toInteger($studentId))
+            ->where('ci.id_curso', PostgreSqlIntegerId::toInteger($courseId))
+            ->where('ci.estado', CursoInscripcion::ELIMINADA)
+            ->exists();
+    }
+
+    public function confirmarParticipacion(string $studentId, string $courseId): bool
+    {
+        $inscripcionActiva = Inscripcion::query()
+            ->select('id_inscripcion')
+            ->where('id_usuario', PostgreSqlIntegerId::toInteger($studentId))
+            ->where('estado', true);
+
+        return CursoInscripcion::query()
+            ->where('id_curso', PostgreSqlIntegerId::toInteger($courseId))
+            ->whereIn('id_inscripcion', $inscripcionActiva)
+            ->where('estado', CursoInscripcion::ASISTENCIA_REGISTRADA)
+            ->update(['estado' => CursoInscripcion::PARTICIPACION_CONFIRMADA]) === 1;
+    }
+
+    public function listarInactivasPorCurso(string $courseId): array
+    {
+        return $this->baseQuery()
+            ->join('usuario as u', 'u.id_usuario', '=', 'i.id_usuario')
+            ->where('ci.id_curso', PostgreSqlIntegerId::toInteger($courseId))
+            ->where('i.estado', false)
+            ->addSelect(['u.nombres', 'u.apellidos', 'u.correo'])
+            ->orderByDesc('i.id_inscripcion')
+            ->get()
+            ->map(fn ($row): array => $this->toArray($row) + [
+                'nombre_completo' => trim($row->nombres.' '.$row->apellidos),
+                'correo' => $row->correo,
+            ])
+            ->all();
+    }
+
+    /**
+     * Desactiva la inscripción activa del estudiante en el curso, guardando el
+     * motivo. Si $soloPendiente, solo procede cuando la participación no fue
+     * verificada (estado "activa").
+     */
+    private function desactivar(string $studentId, string $courseId, string $motivo, string $estado, bool $soloPendiente): bool
+    {
+        $idCurso = PostgreSqlIntegerId::toInteger($courseId);
+
         $idInscripcion = Inscripcion::query()
             ->where('id_usuario', PostgreSqlIntegerId::toInteger($studentId))
             ->where('estado', true)
-            ->whereIn('id_inscripcion', $this->inscripcionesDelCurso($courseId))
+            ->whereIn('id_inscripcion', DB::table('curso_inscripcion')
+                ->select('id_inscripcion')
+                ->where('id_curso', $idCurso)
+                ->when($soloPendiente, fn ($q) => $q->where('estado', CursoInscripcion::PENDIENTE)))
             ->value('id_inscripcion');
 
         if ($idInscripcion === null) {
@@ -91,13 +148,13 @@ final class EloquentInscripcionRepository implements InscripcionRepository
 
         Inscripcion::query()->whereKey($idInscripcion)->update([
             'estado' => false,
-            'motivo_cancelacion' => self::MOTIVO_CANCELACION_VOLUNTARIA,
+            'motivo_cancelacion' => mb_substr($motivo, 0, 500),
         ]);
 
         CursoInscripcion::query()
             ->where('id_inscripcion', $idInscripcion)
-            ->where('id_curso', PostgreSqlIntegerId::toInteger($courseId))
-            ->update(['estado' => CursoInscripcion::CANCELADA]);
+            ->where('id_curso', $idCurso)
+            ->update(['estado' => $estado]);
 
         return true;
     }
@@ -109,7 +166,7 @@ final class EloquentInscripcionRepository implements InscripcionRepository
             ->join('usuario as t', 't.id_usuario', '=', 'c.id_tutor')
             ->where('i.id_usuario', PostgreSqlIntegerId::toInteger($studentId))
             ->addSelect([
-                'c.titulo', 'c.descripcion', 'c.modalidad', 'c.estado as estado_curso',
+                'c.titulo', 'c.descripcion', 'c.modalidad', 'c.estado as estado_curso', 'c.fecha_inicio', 'c.fecha_finalizacion',
                 't.id_usuario as id_tutor', 't.nombres as tutor_nombres', 't.apellidos as tutor_apellidos',
             ])
             ->orderByDesc('i.fecha')
@@ -122,6 +179,8 @@ final class EloquentInscripcionRepository implements InscripcionRepository
                     'descripcion' => $row->descripcion,
                     'modalidad' => $row->modalidad,
                     'estado' => $row->estado_curso,
+                    'fecha_inicio' => $row->fecha_inicio,
+                    'fecha_finalizacion' => $row->fecha_finalizacion,
                     'tutor' => [
                         'id_usuario' => (int) $row->id_tutor,
                         'nombre_completo' => trim($row->tutor_nombres.' '.$row->tutor_apellidos),
@@ -171,13 +230,6 @@ final class EloquentInscripcionRepository implements InscripcionRepository
                 'i.id_inscripcion', 'i.id_usuario', 'i.estado', 'i.fecha', 'i.motivo_cancelacion',
                 'ci.id_curso', 'ci.estado as estado_participacion',
             ]);
-    }
-
-    private function inscripcionesDelCurso(string $courseId): Builder
-    {
-        return DB::table('curso_inscripcion')
-            ->select('id_inscripcion')
-            ->where('id_curso', PostgreSqlIntegerId::toInteger($courseId));
     }
 
     private function toArray(object $row): array

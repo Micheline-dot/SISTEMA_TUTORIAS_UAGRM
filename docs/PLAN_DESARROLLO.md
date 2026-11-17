@@ -34,8 +34,8 @@ Un usuario puede ser estudiante y tutor a la vez. El sistema **no procesa pagos*
 | CU11 | RF11 | Realizar búsqueda | Alta | ✅ | — (título, descripción, nombre del tutor y categoría; búsqueda en la URL) |
 | CU12 | RF12 | Filtrar resultados | Alta | ✅ | — (categoría, modalidad, costo, valoración mínima del tutor, solo con cupos; ordenar por recientes/próximas/valoración) |
 | CU13 | RF13 | Visualizar detalles del curso | Alta | ✅ | — (datos, cupos libres, temario, perfil y valoración del tutor; enlaces de recursos solo para inscritos) |
-| CU14 | RF14 | Gestionar inscripción | Alta | 🟡 | Motivo al cancelar |
-| CU15 | RF15 | Gestionar estudiantes inscritos | Alta | ✅ | (asistencia hecha) retirar estudiante no confirmado |
+| CU14 | RF14 | Gestionar inscripción | Alta | ✅ | — (cancelar con motivo y aviso al tutor; confirmar participación tras la asistencia; activas/historial) |
+| CU15 | RF15 | Gestionar estudiantes inscritos | Alta | ✅ | — (registrar asistencia, retirar con motivo a quien no tiene asistencia, historial; el retirado no puede reinscribirse) |
 | CU16 | RF16 | Calificar tutor y reseña | Media | ⬜ | 1–5 estrellas + comentario, solo con participación verificada |
 | CU17 | RF17 | Responder formulario | Media | ⬜ | Formulario tras calificar |
 | CU18 | RF18 | Ver reseñas y formularios | Media | ⬜ | Vista del tutor |
@@ -74,7 +74,7 @@ Extra ya implementado: administración general de tutorías (listar, detalle, ca
 
 **Fase 4 — Búsqueda**: 4.1 ✅ CU11 · 4.2 ✅ CU12 · 4.3 ✅ CU13 (+ regla: el tutor no se inscribe en su propia tutoría).
 
-**Fase 5 — Inscripciones**: 5.1 CU14 ajustes · 5.2 CU15 retirar estudiante.
+**Fase 5 — Inscripciones**: 5.1 ✅ CU14 ajustes · 5.2 ✅ CU15 retirar estudiante.
 
 **Fase 6 — Calificaciones**: 6.1 CU16 · 6.2 CU17 · 6.3 CU18.
 

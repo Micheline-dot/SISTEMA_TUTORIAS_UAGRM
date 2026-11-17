@@ -53,7 +53,7 @@ final class CancelAdminCourse
                 throw new CourseCannotBeCancelled();
             }
 
-            $this->courses->cancelarInscripcionesActivas($courseId);
+            $this->courses->cancelarInscripcionesActivas($courseId, 'Tutoría cancelada por la administración: '.$reason);
 
             $titulo = $course['titulo'] ?? 'sin título';
 

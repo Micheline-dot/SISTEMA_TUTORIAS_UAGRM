@@ -50,7 +50,7 @@ final class DetalleTutoria extends Component
         try {
             $this->inscribir->execute((string) auth()->id(), $this->courseId);
             session()->flash('ok', '¡Te inscribiste correctamente! Ya puedes ver los recursos del temario.');
-        } catch (AlreadyEnrolled|AttendanceAlreadyVerified|CourseFull|CourseNotAvailable|CannotEnrollOwnCourse $e) {
+        } catch (AlreadyEnrolled|AttendanceAlreadyVerified|CourseFull|CourseNotAvailable|CannotEnrollOwnCourse|\App\Business\Inscripciones\Exceptions\EnrollmentRuleViolation $e) {
             $this->addError('general', $e->getMessage());
         } catch (StudentNotEligible) {
             abort(403);

@@ -118,7 +118,7 @@ final class ManageTutorCourse
                 throw new CourseRuleViolation('No se pudo cancelar la tutoría.');
             }
 
-            $this->adminCourses->cancelarInscripcionesActivas($courseId);
+            $this->adminCourses->cancelarInscripcionesActivas($courseId, 'Tutoría cancelada por el tutor: '.$reason);
 
             $this->notificar->aUsuarios(
                 $students,

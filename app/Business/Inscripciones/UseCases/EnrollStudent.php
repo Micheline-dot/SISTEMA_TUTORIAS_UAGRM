@@ -7,6 +7,7 @@ use App\Business\Inscripciones\Contracts\StudentEligibility;
 use App\Business\Inscripciones\Exceptions\AlreadyEnrolled;
 use App\Business\Inscripciones\Exceptions\AttendanceAlreadyVerified;
 use App\Business\Inscripciones\Exceptions\CannotEnrollOwnCourse;
+use App\Business\Inscripciones\Exceptions\EnrollmentRuleViolation;
 use App\Business\Inscripciones\Exceptions\CourseFull;
 use App\Business\Inscripciones\Exceptions\CourseNotAvailable;
 use App\Business\Inscripciones\Exceptions\StudentNotEligible;
@@ -35,6 +36,11 @@ final class EnrollStudent
 
             if ((string) ($course['id_tutor'] ?? '') === $studentId) {
                 throw new CannotEnrollOwnCourse();
+            }
+
+            // CU15: quien fue retirado por el tutor no puede volver a inscribirse.
+            if ($this->inscripciones->fueRetirado($studentId, $courseId)) {
+                throw new EnrollmentRuleViolation('El tutor te retiró de esta tutoría; no puedes volver a inscribirte.');
             }
 
             if ($this->inscripciones->buscarInscripcionActiva($studentId, $courseId) !== null) {

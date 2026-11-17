@@ -147,7 +147,7 @@ final class EloquentAdminCourseRepository implements AdminCourseRepository
      * Cancela únicamente las inscripciones activas.
      * No modifica el estado de participación (asistencia).
      */
-    public function cancelarInscripcionesActivas(string $courseId): int
+    public function cancelarInscripcionesActivas(string $courseId, ?string $motivo = null): int
     {
         $id = PostgreSqlIntegerId::toInteger($courseId);
 
@@ -160,7 +160,7 @@ final class EloquentAdminCourseRepository implements AdminCourseRepository
             ->where('estado', true)
             ->update([
                 'estado' => false,
-                'motivo_cancelacion' => self::MOTIVO_CANCELACION_CURSO,
+                'motivo_cancelacion' => mb_substr($motivo ?? self::MOTIVO_CANCELACION_CURSO, 0, 500),
             ]);
 
         // Las que ya tenían asistencia registrada conservan ese estado (historial).

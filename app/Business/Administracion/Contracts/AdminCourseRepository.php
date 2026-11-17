@@ -18,7 +18,9 @@ interface AdminCourseRepository
         string $reason
     ): bool;
 
+    /** Cancela las inscripciones activas guardando el motivo indicado. */
     public function cancelarInscripcionesActivas(
-        string $courseId
+        string $courseId,
+        ?string $motivo = null,
     ): int;
 }
