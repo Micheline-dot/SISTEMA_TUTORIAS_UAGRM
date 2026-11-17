@@ -135,7 +135,7 @@ final class MiPerfil extends Component
             'faculty' => 'facultad',
             'registrationType' => 'tipo de registro',
             'studentRegistry' => 'registro universitario',
-            'assistantRegistry' => 'registro de auxiliar',
+            'assistantRegistry' => 'código de auxiliar',
             'teacherCode' => 'código de docente',
         ]);
 
@@ -154,7 +154,7 @@ final class MiPerfil extends Component
         } catch (DuplicateAcademicCode $e) {
             $this->addError($e->field, match ($e->field) {
                 DuplicateAcademicCode::STUDENT_REGISTRY => 'Este registro universitario ya pertenece a otra cuenta.',
-                DuplicateAcademicCode::ASSISTANT_REGISTRY => 'Este registro de auxiliar ya pertenece a otra cuenta.',
+                DuplicateAcademicCode::ASSISTANT_REGISTRY => 'Este código de auxiliar ya pertenece a otra cuenta.',
                 default => 'Este código de docente ya pertenece a otra cuenta.',
             });
         } catch (FacultyNotFound) {

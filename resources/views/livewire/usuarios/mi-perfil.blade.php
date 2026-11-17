@@ -18,9 +18,17 @@
         .perfil .warn { background: #fff4e5; color: #8a5300; border-radius: 8px; padding: 12px 14px; font-size: 14px; }
         .perfil .foto-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
         .perfil .avatar { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; background: #e7f2fb; display: grid; place-items: center; font-size: 34px; color: #21618e; font-weight: bold; }
-        .perfil .tipos { display: flex; gap: 10px; flex-wrap: wrap; }
-        .perfil .tipo { border: 1px solid #c5d1e0; border-radius: 8px; padding: 10px 14px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; gap: 8px; align-items: center; margin: 0; }
+        .perfil .tipos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+        .perfil .tipo { position: relative; border: 2px solid #dbe3ee; border-radius: 12px; padding: 16px 14px; cursor: pointer; display: grid; gap: 4px; margin: 0; font-weight: normal; transition: border-color .15s, background .15s; }
+        .perfil .tipo:hover { border-color: #9bb5dc; }
         .perfil .tipo.sel { border-color: #174ea6; background: #eef4ff; }
+        .perfil .tipo.sel::after { content: "✓"; position: absolute; top: 10px; right: 12px; color: #174ea6; font-weight: 700; }
+        .perfil .tipo-radio { position: absolute; opacity: 0; pointer-events: none; }
+        .perfil .tipo:focus-within { outline: 3px solid #9bb5dc; outline-offset: 2px; }
+        .perfil .tipo-icono { font-size: 24px; }
+        .perfil .tipo-titulo { font-weight: 700; font-size: 15px; color: #172b4d; }
+        .perfil .tipo-detalle { font-size: 13px; color: #65738a; line-height: 1.4; }
+        @media (max-width: 700px) { .perfil .tipos { grid-template-columns: 1fr; } }
         .perfil dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 18px; margin: 0; font-size: 15px; }
         .perfil dt { color: #65738a; }
         .perfil dd { margin: 0; font-weight: 600; }
@@ -118,7 +126,7 @@
                         <dt>Registro universitario</dt><dd>{{ $profile->studentRegistry }}</dd>
                     @endif
                     @if ($profile->assistantRegistry)
-                        <dt>Registro de auxiliar</dt><dd>{{ $profile->assistantRegistry }}</dd>
+                        <dt>Código de auxiliar</dt><dd>{{ $profile->assistantRegistry }}</dd>
                     @endif
                     @if ($profile->teacherCode)
                         <dt>Código de docente</dt><dd>{{ $profile->teacherCode }}</dd>
@@ -137,17 +145,24 @@
                     </select>
                     @error('faculty') <div class="error">{{ $message }}</div> @enderror
 
-                    <label>Tipo de registro</label>
-                    <div class="tipos">
-                        @foreach (['ESTUDIANTE' => 'Estudiante', 'AUXILIAR' => 'Auxiliar', 'DOCENTE' => 'Docente'] as $value => $label)
+                    <label>¿Cuál es tu tipo de registro?</label>
+                    <div class="tipos" role="radiogroup" aria-label="Tipo de registro">
+                        @foreach ([
+                            'ESTUDIANTE' => ['Estudiante', 'Ingresas tu registro universitario.', '🎓'],
+                            'AUXILIAR' => ['Auxiliar', 'Ingresas tu registro universitario y tu código de auxiliar.', '🧑‍🏫'],
+                            'DOCENTE' => ['Docente', 'Ingresas tu código de docente.', '📘'],
+                        ] as $value => [$label, $detalle, $icono])
                             <label class="tipo {{ $registrationType === $value ? 'sel' : '' }}">
-                                <input type="radio" wire:model.live="registrationType" value="{{ $value }}"> {{ $label }}
+                                <input type="radio" class="tipo-radio" wire:model.live="registrationType" value="{{ $value }}">
+                                <span class="tipo-icono" aria-hidden="true">{{ $icono }}</span>
+                                <span class="tipo-titulo">{{ $label }}</span>
+                                <span class="tipo-detalle">{{ $detalle }}</span>
                             </label>
                         @endforeach
                     </div>
                     @error('registrationType') <div class="error">{{ $message }}</div> @enderror
 
-                    <div class="grid2">
+                    <div class="grid2" style="margin-top: 6px;">
                         @if (in_array($registrationType, ['ESTUDIANTE', 'AUXILIAR'], true))
                             <div>
                                 <label for="studentRegistry">Registro universitario</label>
@@ -158,7 +173,7 @@
 
                         @if ($registrationType === 'AUXILIAR')
                             <div>
-                                <label for="assistantRegistry">Registro de auxiliar</label>
+                                <label for="assistantRegistry">Código de auxiliar</label>
                                 <input id="assistantRegistry" type="text" wire:model="assistantRegistry" maxlength="30">
                                 @error('assistantRegistry') <div class="error">{{ $message }}</div> @enderror
                             </div>
