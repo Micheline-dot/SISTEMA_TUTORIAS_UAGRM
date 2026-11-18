@@ -19,6 +19,13 @@ final class ListStudentEnrollments
             throw new StudentNotEligible();
         }
 
-        return $this->inscripciones->listarPorEstudiante($studentId);
+        // (+) El teléfono del tutor solo se entrega mientras la inscripción está vigente.
+        return array_map(function (array $i): array {
+            if (($i['estado'] ?? null) !== 'INSCRITO' && isset($i['curso']['tutor'])) {
+                $i['curso']['tutor']['telefono'] = null;
+            }
+
+            return $i;
+        }, $this->inscripciones->listarPorEstudiante($studentId));
     }
 }

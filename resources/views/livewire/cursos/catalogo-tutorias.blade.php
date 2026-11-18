@@ -106,34 +106,10 @@
             @endif
         </div>
     @else
-        <div class="lista">
+        @include('livewire.cursos._tarjeta-estilos')
+        <div class="tt-lista">
             @foreach ($tutorias as $t)
-                @php $libres = $t->availableSeats(); @endphp
-                <a class="card" href="{{ route('estudiante.tutoria', $t->id) }}" wire:navigate wire:key="catalogo-{{ $t->id }}">
-                    <div class="etiquetas">
-                        @if ($t->categoryName) <span class="tag">{{ $t->categoryName }}</span> @endif
-                        <span class="tag {{ $t->isFree ? 'gratis' : 'pago' }}">{{ $t->isFree ? 'Gratuita' : 'De pago' }}</span>
-                        @if ($libres === 0) <span class="tag lleno">Sin cupos</span> @endif
-                    </div>
-                    <h3>{{ $t->title ?: 'Tutoría sin título' }}</h3>
-                    <p class="desc">{{ $t->description }}</p>
-                    <div class="meta">
-                        Tutor: <strong>{{ $t->tutorName }}</strong>
-                        @if ($t->tutorRating !== null)
-                            · <span class="estrellas" aria-label="{{ $t->tutorRating }} de 5">{{ str_repeat('★', (int) round($t->tutorRating)) }}{{ str_repeat('☆', 5 - (int) round($t->tutorRating)) }}</span>
-                            {{ number_format($t->tutorRating, 1) }} ({{ $t->tutorRatingCount }})
-                        @else
-                            · <span class="sin-val">Sin valoraciones</span>
-                        @endif
-                        <br>
-                        {{ $t->modality ? ucfirst(mb_strtolower($t->modality->value)) : '' }}
-                        @if ($t->startDate)
-                            · {{ \Illuminate\Support\Carbon::parse($t->startDate)->format('d/m/Y') }} – {{ \Illuminate\Support\Carbon::parse($t->endDate)->format('d/m/Y') }}
-                        @endif
-                        @if ($libres !== null) <br>{{ $libres }} de {{ $t->totalSeats }} cupos libres @endif
-                    </div>
-                    <span class="ver">Ver detalle →</span>
-                </a>
+                @include('livewire.cursos._tarjeta-tutoria', ['t' => $t])
             @endforeach
         </div>
     @endif

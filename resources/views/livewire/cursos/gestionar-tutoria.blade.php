@@ -43,6 +43,10 @@
         .gt .fondo { position: fixed; inset: 0; background: rgba(15, 30, 55, .45); display: grid; place-items: center; padding: 16px; z-index: 50; }
         .gt .modal { background: white; border-radius: 14px; padding: 24px; width: min(100%, 480px); }
         .gt .volver { color: #174ea6; text-decoration: none; font-weight: 600; font-size: 14px; }
+        .gt .portada { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; align-items: start; }
+        .gt .portada-img { width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: linear-gradient(135deg, #174ea6, #3aa0d8); display: grid; place-items: center; color: #fff; font-weight: 800; text-align: center; padding: 0; }
+        .gt .portada-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        @media (max-width: 700px) { .gt .portada { grid-template-columns: 1fr; } }
         @media (max-width: 700px) { .gt .grid, .gt .grid3 { grid-template-columns: 1fr; } }
     </style>
 
@@ -97,6 +101,41 @@
                 <a class="btn sec" href="{{ route('tutor.asistencia', $curso->id) }}">Ver inscritos y asistencia</a>
             </div>
         @endif
+    </section>
+
+    {{-- (+) Portada --}}
+    <section class="panel">
+        <h2>Portada</h2>
+        <p class="hint">Una imagen llamativa ayuda a que los estudiantes encuentren tu tutoría. Formato horizontal recomendado (16:9).</p>
+        <div class="portada">
+            <div class="portada-img">
+                @if ($nuevaPortada && ! $errors->has('nuevaPortada') && method_exists($nuevaPortada, 'isPreviewable') && $nuevaPortada->isPreviewable())
+                    <img src="{{ $nuevaPortada->temporaryUrl() }}" alt="Vista previa de la nueva portada">
+                @elseif ($curso->hasCover)
+                    <img src="{{ route('tutoria.portada', ['courseId' => $curso->id]) }}" alt="Portada actual">
+                @else
+                    <span style="padding: 0 12px;">{{ $curso->title ?: 'Sin portada' }}</span>
+                @endif
+            </div>
+            <div>
+                @if ($editableTemario)
+                    <form wire:submit="guardarPortada">
+                        <label for="nuevaPortada" style="margin-top:0;">{{ $curso->hasCover ? 'Cambiar portada' : 'Subir portada' }} <span style="font-weight:400;color:#718096;">(JPG, PNG o WEBP, máx. 3 MB)</span></label>
+                        <input id="nuevaPortada" type="file" wire:model="nuevaPortada" accept="image/jpeg,image/png,image/webp">
+                        <div wire:loading wire:target="nuevaPortada" class="sub" style="margin-top:4px;">Subiendo imagen…</div>
+                        @error('nuevaPortada') <div class="error">{{ $message }}</div> @enderror
+                        <div class="acciones">
+                            <button type="submit" class="btn" wire:loading.attr="disabled" wire:target="guardarPortada,nuevaPortada">Guardar portada</button>
+                            @if ($curso->hasCover)
+                                <button type="button" class="btn peligro" wire:click="quitarPortada" wire:confirm="¿Quitar la portada de esta tutoría?">Quitar portada</button>
+                            @endif
+                        </div>
+                    </form>
+                @else
+                    <p class="hint">La portada ya no se puede cambiar porque la tutoría está {{ mb_strtolower($curso->status->value) }}.</p>
+                @endif
+            </div>
+        </div>
     </section>
 
     {{-- Datos --}}

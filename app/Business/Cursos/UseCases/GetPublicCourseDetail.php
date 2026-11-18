@@ -66,6 +66,8 @@ final class GetPublicCourseDetail
             viewerIsOwner: $isOwner,
             viewerAlreadyParticipated: $participated,
             latestReviews: $this->reviews->latestReviewsForTutor($course->ownerTutorId, 5),
+            // Contacto directo solo después de inscribirse.
+            tutorPhone: $isEnrolled ? $tutor?->phone : null,
         );
     }
 }

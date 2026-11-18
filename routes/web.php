@@ -3,6 +3,10 @@
 use App\Presentation\Http\Controllers\DocumentoSolicitudHabilitacionController;
 use App\Presentation\Http\Controllers\FotoPerfilController;
 use App\Presentation\Http\Controllers\LogoutController;
+use App\Presentation\Http\Controllers\LogoSistemaController;
+use App\Presentation\Livewire\Administracion\ConfigurarLogo;
+use App\Presentation\Http\Controllers\PortadaTutoriaController;
+use App\Presentation\Livewire\Cursos\PerfilTutor;
 use App\Presentation\Livewire\Notificaciones\MisNotificaciones;
 use App\Presentation\Livewire\Tutor\PerfilAcademico;
 use App\Presentation\Livewire\Usuarios\MiPerfil;
@@ -32,6 +36,10 @@ Route::get('/', function () {
         : redirect()->route('login');
 });
 
+// Imágenes institucionales (públicas: se muestran en el login)
+Route::get('/sistema/logo', [LogoSistemaController::class, 'logo'])->name('sistema.logo');
+Route::get('/sistema/fondo-login', [LogoSistemaController::class, 'fondoLogin'])->name('sistema.fondo-login');
+
 // Invitados (sin sesión) — CU01
 Route::middleware('guest')->group(function () {
     Route::get('/registro', Register::class)->name('register');
@@ -52,6 +60,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/usuarios/{userId}/foto', FotoPerfilController::class)
         ->whereNumber('userId')
         ->name('perfil.foto');
+    Route::get('/tutorias/{courseId}/portada', PortadaTutoriaController::class)
+        ->whereNumber('courseId')
+        ->name('tutoria.portada');
 
     // Área de estudiante — CU03, CU11–CU14
     Route::middleware('rol:ESTUDIANTE')->group(function () {
@@ -65,6 +76,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/estudiante/tutorias/{courseId}/calificar', CalificarTutoria::class)
             ->whereNumber('courseId')
             ->name('estudiante.calificar');
+        Route::get('/estudiante/tutores/{tutorId}', PerfilTutor::class)
+            ->whereNumber('tutorId')
+            ->name('estudiante.tutor');
         Route::get('/estudiante/mis-inscripciones', MisInscripciones::class)
             ->name('estudiante.inscripciones');
     });
@@ -100,6 +114,8 @@ Route::middleware('auth')->group(function () {
             ->name('admin.usuarios');
         Route::get('/categorias', GestionarCategorias::class)
             ->name('admin.categorias');
+        Route::get('/logo', ConfigurarLogo::class)
+            ->name('admin.logo');
         Route::get('/reportes', ReportesAdmin::class)
             ->name('admin.reportes');
     });

@@ -27,6 +27,8 @@ final readonly class PublicCourseDetail
         public bool $viewerAlreadyParticipated,
         /** @var list<\App\Business\Calificaciones\DTO\Review> últimas reseñas del tutor (CU16) */
         public array $latestReviews = [],
+        /** (+) Teléfono del tutor: solo se entrega a estudiantes inscritos. */
+        public ?string $tutorPhone = null,
     ) {
     }
 
@@ -35,6 +37,25 @@ final readonly class PublicCourseDetail
         return $this->course->totalSeats === null
             ? null
             : max(0, $this->course->totalSeats - $this->course->activeEnrollments);
+    }
+
+    /** Enlace de WhatsApp al tutor (números bolivianos de 8 dígitos llevan el prefijo 591). */
+    public function tutorWhatsappUrl(): ?string
+    {
+        return self::whatsappUrl($this->tutorPhone);
+    }
+
+    public static function whatsappUrl(?string $phone): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $phone);
+        if ($digits === '' || strlen($digits) < 7) {
+            return null;
+        }
+        if (strlen($digits) === 8) {
+            $digits = '591'.$digits;
+        }
+
+        return 'https://wa.me/'.$digits;
     }
 
     /** Los enlaces de los recursos solo se muestran a inscritos y al propio tutor. */

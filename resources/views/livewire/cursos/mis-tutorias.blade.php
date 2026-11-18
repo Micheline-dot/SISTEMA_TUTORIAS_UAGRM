@@ -103,9 +103,17 @@
                 </select>
                 @error('categoria') <div class="error">{{ $message }}</div> @enderror
 
+                <label for="portada">Portada <span style="font-weight:400;color:#718096;">(opcional · JPG, PNG o WEBP, máx. 3 MB)</span></label>
+                <input id="portada" type="file" wire:model="portada" accept="image/jpeg,image/png,image/webp">
+                <div wire:loading wire:target="portada" style="font-size:13px;color:#718096;margin-top:4px;">Subiendo imagen…</div>
+                @error('portada') <div class="error">{{ $message }}</div> @enderror
+                @if ($portada && ! $errors->has('portada') && method_exists($portada, 'isPreviewable') && $portada->isPreviewable())
+                    <img src="{{ $portada->temporaryUrl() }}" alt="Vista previa de la portada" style="margin-top:8px;width:100%;aspect-ratio:16/7;object-fit:cover;border-radius:10px;">
+                @endif
+
                 <div class="pie">
                     <button type="button" class="btn sec" wire:click="cerrarNueva">Cancelar</button>
-                    <button type="submit" class="btn" wire:loading.attr="disabled">Crear borrador</button>
+                    <button type="submit" class="btn" wire:loading.attr="disabled" wire:target="crear,portada">Crear borrador</button>
                 </div>
             </form>
         </div>

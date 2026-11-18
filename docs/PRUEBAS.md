@@ -26,12 +26,14 @@ CREATE DATABASE sistema_tutorias_uagrm_test;
 | `Flows/InscripcionesFlowTest` | CU11–CU15 | Búsqueda por texto/tutor/categoría, cupo lleno, inscripción duplicada, tutor en su propia tutoría, cancelar con motivo y liberar cupo, asistencia + confirmación, retiro sin reinscripción, pantallas |
 | `Flows/CalificacionesFlowTest` | CU16–CU18 | Solo con participación confirmada, una calificación, validaciones, encuesta, promedio/distribución/% recomienda, pantalla Calificar |
 | `Flows/ReportesFlowTest` | CU22, CU23 | Totales, mejor tutor, categoría y facultad más solicitadas, mejor tutoría, promedio de inscritos, ocupación, periodo, exportación CSV |
+| `Flows/PortadaPerfilContactoFlowTest` | CU07, CU13, CU14 (+) | Subir/cambiar/quitar portada, formatos y dueño, visibilidad por estado, crear con portada, perfil público del tutor, teléfono solo para inscritos, enlace de WhatsApp |
+| `Flows/LogoSistemaFlowTest` | (+) | Texto por defecto, subir/reemplazar/quitar logo, solo admin, sin SVG, login/registro/menú |
 | `Flows/AccesoPorRolTest` | Todos | Matriz de rutas por rol (invitado, estudiante, tutor, administrador), cuenta desactivada, menú por rol |
 
 ## Resultado de la última ejecución (17/11/2026)
 
-- Unitarias + Feature: **25/25** ✅ (los 46 de integración aparecen como *skipped* en esta suite, es lo esperado).
-- Integración: **46/46** ✅ (193 aserciones).
+- Unitarias + Feature: **25/25** ✅ (los 61 de integración aparecen como *skipped* en esta suite, es lo esperado).
+- Integración: **61/61** ✅.
 
 ## Pruebas manuales recomendadas antes de la defensa
 

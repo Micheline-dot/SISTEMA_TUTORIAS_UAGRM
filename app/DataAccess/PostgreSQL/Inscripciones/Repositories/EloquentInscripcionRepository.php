@@ -171,7 +171,7 @@ final class EloquentInscripcionRepository implements InscripcionRepository
             ->where('i.id_usuario', PostgreSqlIntegerId::toInteger($studentId))
             ->addSelect([
                 'c.titulo', 'c.descripcion', 'c.modalidad', 'c.estado as estado_curso', 'c.fecha_inicio', 'c.fecha_finalizacion',
-                't.id_usuario as id_tutor', 't.nombres as tutor_nombres', 't.apellidos as tutor_apellidos',
+                't.id_usuario as id_tutor', 't.nombres as tutor_nombres', 't.apellidos as tutor_apellidos', 't.telefono as tutor_telefono',
                 'cr.puntuacion as calificacion', 'f.id_formulario',
             ])
             ->orderByDesc('i.fecha')
@@ -192,6 +192,7 @@ final class EloquentInscripcionRepository implements InscripcionRepository
                     'tutor' => [
                         'id_usuario' => (int) $row->id_tutor,
                         'nombre_completo' => trim($row->tutor_nombres.' '.$row->tutor_apellidos),
+                        'telefono' => $row->tutor_telefono,
                     ],
                 ],
             ])

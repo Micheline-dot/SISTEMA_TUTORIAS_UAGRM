@@ -50,7 +50,7 @@ erDiagram
 | administrador | id_administrador PK/FK→usuario (cascade), cargo v100 |
 | perfil_academico | id_perfil_academico PK, biografia, enlaces, conocimiento (text), id_tutor único FK→tutor |
 | categoria | id_categoria PK, nombre v100 único |
-| curso | id_curso PK, titulo v150, modalidad v20, cupos, es_gratuito, id_categoria FK, id_tutor FK→tutor; **(+)** descripcion, fecha_inicio, fecha_finalizacion, estado (`BORRADOR`/`PUBLICADO`/`CANCELADO`/`FINALIZADO`), motivo_cancelacion, fecha_cancelacion. **(+)** titulo/modalidad/cupos/es_gratuito/id_categoria anulables mientras el curso es borrador |
+| curso | id_curso PK, titulo v150, modalidad v20, cupos, es_gratuito, id_categoria FK, id_tutor FK→tutor; **(+)** descripcion, fecha_inicio, fecha_finalizacion, estado (`BORRADOR`/`PUBLICADO`/`CANCELADO`/`FINALIZADO`), motivo_cancelacion, fecha_cancelacion, portada v255 (imagen opcional en `storage/app/private/cursos/portadas`, se sirve por ruta autenticada). **(+)** titulo/modalidad/cupos/es_gratuito/id_categoria anulables mientras el curso es borrador |
 | temario | PK (id_curso, id_temario identity), nombre v150, fecha, estado v20; cascade con curso; **(+)** estado `PENDIENTE`/`COMPLETADO` (CHECK, default PENDIENTE) |
 | recurso | PK (id_recurso identity, id_temario, id_curso), nombre v150; FK (id_curso,id_temario)→temario cascade; **(+)** enlace v255 (material como enlace http/https) |
 | inscripcion | id_inscripcion PK, fecha, estado bool (true activa), motivo_cancelacion v500, id_usuario FK→usuario |
@@ -61,6 +61,7 @@ erDiagram
 | documento_solicitud | id_documento PK, nombre v150 (tipo de documento), ruta v500 (PDF en `storage/app/private`), id_solicitud FK cascade |
 | notificacion | id_notificacion PK, mensaje v500, fecha, estado bool (false = no leída); **(+)** titulo v150, enlace v255 (ruta interna). Una notificación por destinatario; estado = leída |
 | notificacion_usuario | PK (id_usuario, id_notificacion), ambas FK cascade |
+| **configuracion (+)** | clave v60 PK, valor v500, actualizado_en. Configuración administrable; `logo` = ruta del logo institucional en `storage/app/private/sistema` |
 
 ## 4. Reglas de negocio reflejadas en datos
 

@@ -19,6 +19,8 @@ final readonly class PublishedCourseSummary
         public int $activeEnrollments = 0,
         public ?float $tutorRating = null,
         public int $tutorRatingCount = 0,
+        public bool $hasCover = false,
+        public bool $tutorHasPhoto = false,
     ) {
     }
 

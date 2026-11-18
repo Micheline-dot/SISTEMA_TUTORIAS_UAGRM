@@ -188,6 +188,7 @@ final class EloquentCourseRepository implements CourseRepository
                 DB::raw("TRIM(u.nombres || ' ' || u.apellidos) AS tutor"),
                 DB::raw('COALESCE(ins.activos, 0) AS activos'),
                 'val.promedio', DB::raw('COALESCE(val.total, 0) AS valoraciones'),
+                'c.portada', 'u.foto_perfil',
             ]);
 
         // CU11: título, descripción, nombre del tutor o categoría.
@@ -213,6 +214,10 @@ final class EloquentCourseRepository implements CourseRepository
 
         if ($filters->categoryId !== null && ctype_digit($filters->categoryId)) {
             $query->where('c.id_categoria', (int) $filters->categoryId);
+        }
+
+        if ($filters->tutorId !== null && ctype_digit($filters->tutorId)) {
+            $query->where('c.id_tutor', (int) $filters->tutorId);
         }
 
         if ($filters->minRating !== null) {
@@ -245,6 +250,8 @@ final class EloquentCourseRepository implements CourseRepository
                 activeEnrollments: (int) $r->activos,
                 tutorRating: $r->promedio === null ? null : round((float) $r->promedio, 1),
                 tutorRatingCount: (int) $r->valoraciones,
+                hasCover: $r->portada !== null,
+                tutorHasPhoto: $r->foto_perfil !== null,
             ))
             ->all();
     }
@@ -267,6 +274,7 @@ final class EloquentCourseRepository implements CourseRepository
             endDate: $course->fecha_finalizacion?->toDateString(),
             cancellationReason: $course->motivo_cancelacion,
             activeEnrollments: (int) ($course->inscritos_activos ?? $course->inscripcionesActivas()->count()),
+            hasCover: $course->portada !== null,
         );
     }
 

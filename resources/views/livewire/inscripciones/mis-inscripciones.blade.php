@@ -21,6 +21,8 @@
         .mi .acciones { display: flex; flex-direction: column; gap: 8px; align-items: stretch; min-width: 170px; }
         .mi .btn { padding: 9px 14px; border: 0; border-radius: 8px; background: #174ea6; color: white; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; text-align: center; text-decoration: none; }
         .mi .btn.ok-btn { background: #16804a; }
+        .mi .btn.wa { background: #1fa855; }
+        .mi .tel { font-size: 13px; color: #52657e; text-align: center; }
         .mi .btn.sec { background: #e9eef5; color: #243047; }
         .mi .btn.peligro { background: #fdecea; color: #9b2c22; }
         .mi .ok { background: #e8f6ee; color: #1d6b3f; border-radius: 8px; padding: 12px 14px; }
@@ -89,6 +91,11 @@
 
                     <div class="acciones">
                         <a class="btn sec" href="{{ route('estudiante.tutoria', $i['id_curso']) }}" wire:navigate>Ver tutoría</a>
+                        @php $tel = $i['estado'] === 'INSCRITO' ? ($curso['tutor']['telefono'] ?? null) : null; $wa = \App\Business\Cursos\DTO\PublicCourseDetail::whatsappUrl($tel); @endphp
+                        @if ($wa)
+                            <a class="btn wa" href="{{ $wa }}?text={{ rawurlencode('Hola, estoy inscrito en tu tutoría "'.($curso['titulo'] ?? '').'" (Tutorías UAGRM).') }}" target="_blank" rel="noopener noreferrer">Contactar tutor</a>
+                            <span class="tel">📞 {{ $tel }}</span>
+                        @endif
                         @if ($i['estado'] === 'INSCRITO' && $p === 'asistio')
                             <button class="btn ok-btn" wire:click="confirmarParticipacion('{{ $i['id_curso'] }}')"
                                     wire:confirm="¿Confirmas que participaste en esta tutoría?">Confirmar participación</button>

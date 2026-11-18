@@ -10,9 +10,11 @@ use App\Business\Cursos\DTO\ListTutorCoursesInput;
 use App\Business\Cursos\UseCases\AcademicProfileIncomplete;
 use App\Business\Cursos\UseCases\CreateCourseDraft;
 use App\Business\Cursos\UseCases\ListTutorCourses;
+use App\Business\Cursos\UseCases\ManageCourseCover;
 use App\Business\Usuarios\UseCases\ManageAcademicProfile;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * CU07 Gestionar cursos: lista de tutorías del tutor y creación de borradores.
@@ -20,6 +22,11 @@ use Livewire\Component;
  */
 final class MisTutorias extends Component
 {
+    use WithFileUploads;
+
+    /** (+) Portada opcional al crear la tutoría. */
+    public $portada = null;
+
     public bool $mostrarNueva = false;
 
     public string $titulo = '';
@@ -32,13 +39,16 @@ final class MisTutorias extends Component
     protected ListTutorCourses $listCourses;
     protected ManageCategories $categorias;
     protected ManageAcademicProfile $perfilAcademico;
+    protected ManageCourseCover $portadas;
 
     public function boot(
         CreateCourseDraft $createCourse,
         ListTutorCourses $listCourses,
         ManageCategories $categorias,
         ManageAcademicProfile $perfilAcademico,
+        ManageCourseCover $portadas,
     ): void {
+        $this->portadas = $portadas;
         $this->createCourse = $createCourse;
         $this->listCourses = $listCourses;
         $this->categorias = $categorias;
@@ -52,7 +62,7 @@ final class MisTutorias extends Component
 
     public function nuevaTutoria(): void
     {
-        $this->reset('titulo', 'categoria');
+        $this->reset('titulo', 'categoria', 'portada');
         $this->resetValidation();
         $this->mostrarNueva = true;
     }
@@ -68,7 +78,12 @@ final class MisTutorias extends Component
         $this->validate([
             'titulo' => ['required', 'string', 'min:3', 'max:150'],
             'categoria' => ['required', 'string'],
-        ], [], ['titulo' => 'título', 'categoria' => 'categoría']);
+            'portada' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:'.ManageCourseCover::MAX_KILOBYTES],
+        ], [
+            'portada.image' => 'La portada debe ser una imagen.',
+            'portada.mimes' => 'La portada debe ser JPG, PNG o WEBP.',
+            'portada.max' => 'La portada no debe superar 3 MB.',
+        ], ['titulo' => 'título', 'categoria' => 'categoría']);
 
         try {
             $course = $this->createCourse->execute(new CreateCourseDraftInput(
@@ -89,7 +104,16 @@ final class MisTutorias extends Component
             return null;
         }
 
-        session()->flash('ok', 'Borrador creado. Completa los datos y el temario para publicarlo.');
+        $mensaje = 'Borrador creado. Completa los datos y el temario para publicarlo.';
+        if ($this->portada !== null) {
+            try {
+                $this->portadas->update($this->tutorId(), $course->id, $this->portada->getRealPath(), $this->portada->extension());
+            } catch (\Throwable) {
+                $mensaje .= ' No se pudo guardar la portada; súbela desde esta pantalla.';
+            }
+        }
+
+        session()->flash('ok', $mensaje);
 
         return $this->redirectRoute('tutor.tutoria', ['courseId' => $course->id], navigate: true);
     }

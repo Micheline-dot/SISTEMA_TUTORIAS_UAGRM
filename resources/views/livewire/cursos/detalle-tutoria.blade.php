@@ -40,6 +40,15 @@
         .dt .enlaces a { color: #174ea6; overflow-wrap: anywhere; }
         .dt .resena { border-top: 1px solid #eef2f7; padding: 10px 0; }
         .dt .resena:first-of-type { border-top: 0; padding-top: 0; }
+        .dt .portada { width: 100%; aspect-ratio: 16 / 6; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, #174ea6, #3aa0d8); display: grid; place-items: center; color: #fff; }
+        .dt .portada img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .dt .portada span { font-size: 1.4rem; font-weight: 800; padding: 0 20px; text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,.25); }
+        .dt .contacto { margin-top: 12px; border: 1px solid #cfe8d8; background: #f3fbf6; border-radius: 10px; padding: 12px; }
+        .dt .contacto .tel { font-size: 1.15rem; font-weight: 800; color: #172b4d; letter-spacing: .5px; }
+        .dt .btn.wa { background: #1fa855; text-decoration: none; display: block; text-align: center; box-sizing: border-box; margin-top: 8px; }
+        .dt .link-perfil { display: inline-block; margin-top: 12px; color: #174ea6; font-weight: 700; font-size: 14px; text-decoration: none; }
+        .dt .link-perfil:hover { text-decoration: underline; }
+        .dt .tutor-cab a { color: #172b4d; text-decoration: none; }
         @media (max-width: 860px) { .dt .layout { grid-template-columns: 1fr; } .dt .datos { grid-template-columns: 1fr 1fr; } }
     </style>
 
@@ -53,6 +62,14 @@
 
     @if (session('ok')) <div class="ok">{{ session('ok') }}</div> @endif
     @error('general') <div class="err">{{ $message }}</div> @enderror
+
+    <div class="portada">
+        @if ($c->hasCover)
+            <img src="{{ route('tutoria.portada', ['courseId' => $c->id]) }}" alt="Portada de {{ $c->title }}">
+        @else
+            <span>{{ $c->title }}</span>
+        @endif
+    </div>
 
     <div class="layout">
         <div style="display: grid; gap: 18px;">
@@ -108,6 +125,17 @@
                     <a class="btn sec" href="{{ route('tutor.tutoria', $c->id) }}">Gestionar tutoría</a>
                 @elseif ($d->viewerIsEnrolled)
                     <div class="info">✓ Estás inscrito en esta tutoría.</div>
+                    <div class="contacto">
+                        <div class="sub" style="font-weight:700;">Contacto del tutor</div>
+                        @if ($d->tutorPhone)
+                            <div class="tel">📞 {{ $d->tutorPhone }}</div>
+                            @if ($d->tutorWhatsappUrl())
+                                <a class="btn wa" href="{{ $d->tutorWhatsappUrl() }}?text={{ rawurlencode('Hola, estoy inscrito en tu tutoría "'.$c->title.'" (Tutorías UAGRM).') }}" target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a>
+                            @endif
+                        @else
+                            <div class="sub">El tutor aún no registró su número de teléfono.</div>
+                        @endif
+                    </div>
                     <a class="btn sec" href="{{ route('estudiante.inscripciones') }}">Ver mis inscripciones</a>
                 @elseif ($d->viewerAlreadyParticipated)
                     <div class="info">Ya participaste en esta tutoría.</div>
@@ -130,7 +158,7 @@
                         <div class="avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr($d->tutorName, 0, 1)) }}</div>
                     @endif
                     <div>
-                        <strong>{{ $d->tutorName }}</strong>
+                        <strong><a href="{{ route('estudiante.tutor', ['tutorId' => $d->tutorId]) }}" wire:navigate>{{ $d->tutorName }}</a></strong>
                         <div class="sub">{{ $d->tutorFaculty ?? '' }}</div>
                         <div class="sub">
                             @if ($d->tutorRating !== null)
@@ -156,6 +184,8 @@
                         @endforeach
                     </ul>
                 @endif
+
+                <a class="link-perfil" href="{{ route('estudiante.tutor', ['tutorId' => $d->tutorId]) }}" wire:navigate>Ver perfil completo del tutor →</a>
             </section>
 
             <section class="panel">

@@ -188,7 +188,7 @@
 
     <aside class="sidebar">
 
-        <div class="brand">TUTORÍAS <span>UAGRM</span></div>
+        <a class="brand" href="{{ route('home') }}" style="display:block;text-decoration:none;"><x-logo tema="oscuro" /></a>
 
         <x-menu-rol />
 

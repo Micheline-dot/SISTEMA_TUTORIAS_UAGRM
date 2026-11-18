@@ -136,9 +136,7 @@
 
     <aside class="admin-sidebar">
 
-        <div class="admin-brand">
-            TUTORÍAS <span>UAGRM</span>
-        </div>
+        <a class="admin-brand" href="{{ route('home') }}" style="display:block;text-decoration:none;"><x-logo tema="oscuro" /></a>
 
         <x-menu-rol item-class="admin-nav-item" title-class="admin-nav-title" />
 

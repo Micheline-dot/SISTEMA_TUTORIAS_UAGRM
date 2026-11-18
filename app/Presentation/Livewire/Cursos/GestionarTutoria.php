@@ -13,12 +13,14 @@ use App\Business\Cursos\DTO\UpdateCourseDraftInput;
 use App\Business\Cursos\UseCases\CourseNotFound;
 use App\Business\Cursos\UseCases\CourseNotOwned;
 use App\Business\Cursos\UseCases\CourseRuleViolation;
+use App\Business\Cursos\UseCases\ManageCourseCover;
 use App\Business\Cursos\UseCases\ManageSyllabus;
 use App\Business\Cursos\UseCases\ManageTutorCourse;
 use App\Business\Cursos\UseCases\PublishCourseDraft;
 use App\Business\Cursos\UseCases\UpdateCourseDraft;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * Gestión de una tutoría del tutor:
@@ -28,6 +30,11 @@ use Livewire\Component;
  */
 final class GestionarTutoria extends Component
 {
+    use WithFileUploads;
+
+    /** (+) Nueva imagen de portada. */
+    public $nuevaPortada = null;
+
     public string $courseId;
 
     // Datos del curso
@@ -59,6 +66,7 @@ final class GestionarTutoria extends Component
     protected PublishCourseDraft $publicar;
     protected ManageSyllabus $temario;
     protected ManageCategories $categorias;
+    protected ManageCourseCover $portadas;
 
     public function boot(
         ManageTutorCourse $gestion,
@@ -66,7 +74,9 @@ final class GestionarTutoria extends Component
         PublishCourseDraft $publicar,
         ManageSyllabus $temario,
         ManageCategories $categorias,
+        ManageCourseCover $portadas,
     ): void {
+        $this->portadas = $portadas;
         $this->gestion = $gestion;
         $this->actualizarBorrador = $actualizarBorrador;
         $this->publicar = $publicar;
@@ -235,6 +245,43 @@ final class GestionarTutoria extends Component
             session()->flash('ok', 'La tutoría quedó finalizada.');
         } catch (CourseRuleViolation $e) {
             $this->addError('general', $e->getMessage());
+        }
+    }
+
+    // ---------- (+) Portada ----------
+
+    public function guardarPortada(): void
+    {
+        $this->validate([
+            'nuevaPortada' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:'.ManageCourseCover::MAX_KILOBYTES],
+        ], [
+            'nuevaPortada.required' => 'Selecciona una imagen.',
+            'nuevaPortada.image' => 'La portada debe ser una imagen.',
+            'nuevaPortada.mimes' => 'La portada debe ser JPG, PNG o WEBP.',
+            'nuevaPortada.max' => 'La portada no debe superar 3 MB.',
+        ]);
+
+        try {
+            $this->portadas->update(
+                $this->tutorId(),
+                $this->courseId,
+                $this->nuevaPortada->getRealPath(),
+                $this->nuevaPortada->extension(),
+            );
+            $this->reset('nuevaPortada');
+            session()->flash('ok', 'Portada actualizada.');
+        } catch (CourseRuleViolation $e) {
+            $this->addError('nuevaPortada', $e->getMessage());
+        }
+    }
+
+    public function quitarPortada(): void
+    {
+        try {
+            $this->portadas->remove($this->tutorId(), $this->courseId);
+            session()->flash('ok', 'Se quitó la portada.');
+        } catch (CourseRuleViolation $e) {
+            $this->addError('nuevaPortada', $e->getMessage());
         }
     }
 

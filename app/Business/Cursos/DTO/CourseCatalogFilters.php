@@ -16,6 +16,8 @@ final readonly class CourseCatalogFilters
         public ?int $minRating = null,
         public bool $onlyAvailable = false,
         public string $sort = 'RECIENTES',
+        /** Solo tutorías de este tutor (perfil público del tutor). */
+        public ?string $tutorId = null,
     ) {
     }
 }

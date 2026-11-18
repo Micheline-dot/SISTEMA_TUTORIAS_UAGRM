@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sistema de Tutorías UAGRM</title>
     @livewireStyles
+    @php
+        $fondo = app(\App\Business\Configuracion\UseCases\ManageLoginBackground::class)->currentPath();
+    @endphp
     <style>
         :root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #172b4d; background: #f4f7fb; }
         * { box-sizing: border-box; }
@@ -19,11 +22,23 @@
         a { color: #174ea6; }
         .error { color: #b42318; font-size: .9rem; margin-top: 5px; }
         .notice { border-radius: 8px; padding: 12px; background: #eef5ff; color: #244d80; margin: 16px 0; }
+        .auth-logo { display: flex; justify-content: center; margin: -4px 0 22px; padding-bottom: 20px; border-bottom: 1px solid #e6ecf4; }
+        /* (+) Foto de fondo configurable: capa oscura para que el formulario siga legible */
+        body.con-fondo { background-color: #0f2340; background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; }
+        body.con-fondo main { border-color: transparent; box-shadow: 0 24px 70px rgba(5, 15, 35, .45); }
+        @media (max-width: 600px) { body.con-fondo { background-attachment: scroll; } }
         .empty { border: 1px solid #f0d4a8; background: #fff9ed; border-radius: 8px; padding: 12px; color: #754c12; margin-top: 16px; }
     </style>
 </head>
+@if ($fondo)
+<body class="con-fondo" style="background-image: linear-gradient(rgba(10, 25, 50, .45), rgba(10, 25, 50, .45)), url('{{ route('sistema.fondo-login', ['v' => substr(md5($fondo), 0, 8)]) }}');">
+@else
 <body>
-    <main>{{ $slot }}</main>
+@endif
+    <main>
+        <div class="auth-logo"><x-logo tema="claro" tamano="lg" /></div>
+        {{ $slot }}
+    </main>
     @livewireScripts
 </body>
 </html>

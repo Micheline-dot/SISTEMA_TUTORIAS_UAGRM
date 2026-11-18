@@ -19,6 +19,8 @@ final readonly class CourseDetails
         public ?string $endDate = null,
         public ?string $cancellationReason = null,
         public int $activeEnrollments = 0,
+        /** (+) La tutoría tiene imagen de portada. */
+        public bool $hasCover = false,
     ) {
     }
 }
